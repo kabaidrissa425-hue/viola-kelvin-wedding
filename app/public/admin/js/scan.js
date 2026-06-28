@@ -74,8 +74,20 @@
     els.manualCode.value = '';
   });
 
+  function extractCode(decodedText) {
+    const text = String(decodedText).trim();
+    try {
+      const url = new URL(text);
+      const fromQuery = url.searchParams.get('code');
+      if (fromQuery) return fromQuery.toUpperCase();
+    } catch (e) {
+      // Not a URL — treat the scanned text as the code itself.
+    }
+    return text.toUpperCase();
+  }
+
   function onScanSuccess(decodedText) {
-    const code = String(decodedText).trim().toUpperCase();
+    const code = extractCode(decodedText);
     const now = Date.now();
     if (code === lastCode && now - lastCodeAt < 4000) return;
     lastCode = code;

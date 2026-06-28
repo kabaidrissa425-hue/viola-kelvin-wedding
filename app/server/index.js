@@ -166,6 +166,19 @@ app.get('/api/admin/export.csv', requireAdmin, (req, res) => {
 
 // ── Admin: scan-to-verify check-in ──────────────────────────────────────────
 
+// Read-only lookup behind the verify-ticket deep link — shows who the code
+// belongs to before anyone taps "Confirm Check-In".
+app.get('/api/admin/lookup/:code', requireAdmin, (req, res) => {
+  const code = String(req.params.code || '').trim().toUpperCase();
+  const guest = db.prepare('SELECT * FROM guests WHERE invite_code = ?').get(code);
+  if (!guest) return res.json({ status: 'not_found' });
+  if (guest.attending !== 'yes') return res.json({ status: 'not_attending', name: guest.name });
+  if (guest.checked_in) {
+    return res.json({ status: 'already_checked_in', name: guest.name, checkedInAt: guest.checked_in_at });
+  }
+  res.json({ status: 'ready', name: guest.name });
+});
+
 app.post('/api/checkin', requireAdmin, (req, res) => {
   const code = String((req.body && req.body.code) || '').trim().toUpperCase();
   if (!code) return res.status(400).json({ status: 'not_found' });

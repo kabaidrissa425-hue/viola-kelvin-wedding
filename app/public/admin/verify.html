@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify Ticket — Admin — Viola &amp; Kelvin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/admin.css">
+</head>
+<body>
+
+<div class="admin-bar">
+  <a href="./dashboard.html" class="admin-logo">V &amp; K — Admin</a>
+  <nav class="admin-nav">
+    <a href="./dashboard.html">Guest List</a>
+    <a href="./scan.html">Scan to Verify</a>
+    <button type="button" class="admin-logout" id="logoutBtn">Log Out</button>
+  </nav>
+</div>
+
+<main class="admin-main">
+  <div class="scan-wrap">
+    <h1 class="scan-title">Verify Ticket</h1>
+    <p class="scan-sub">Scanned from a guest's QR pass.</p>
+
+    <div class="scan-result" id="verifyResult">
+      <div class="scan-result-status">Looking up code&hellip;</div>
+    </div>
+
+    <button type="button" class="btn-confirm-checkin" id="confirmCheckIn" style="display:none">Confirm Check-In</button>
+  </div>
+</main>
+
+<script src="./js/verify.js"></script>
+</body>
+</html>

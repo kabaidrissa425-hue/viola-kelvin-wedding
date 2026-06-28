@@ -181,6 +181,14 @@ table.guest-table tr:last-child td { border-bottom: none; }
   background: none; border: none; text-decoration: underline; cursor: pointer; font-family: 'Jost', sans-serif;
 }
 
+.btn-confirm-checkin {
+  font-family: 'Jost', sans-serif; font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ivory); background: var(--ink); border: none; border-radius: 100px; padding: 16px 36px;
+  cursor: pointer; margin-top: 20px; transition: background .2s;
+}
+.btn-confirm-checkin:hover { background: var(--ink-soft); }
+.btn-confirm-checkin:disabled { opacity: .6; cursor: default; }
+
 @media (max-width: 760px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   table.guest-table { font-size: 13px; }

@@ -70,12 +70,18 @@
     drawTicketQr();
   }
 
+  // QR encodes a real link (not the bare code) so scanning with a normal
+  // phone camera opens the verify page directly instead of a web search.
+  function verifyUrl(code) {
+    return `${location.origin}/admin/verify.html?code=${encodeURIComponent(code)}`;
+  }
+
   function drawTicketQr() {
     if (!window.QRious || !state.inviteCode) return;
     if (drawnForCode === state.inviteCode) return;
     new window.QRious({
       element: els.ticketQr,
-      value: state.inviteCode,
+      value: verifyUrl(state.inviteCode),
       size: 220,
       level: 'H',
       background: '#ffffff',
@@ -175,7 +181,7 @@
     x.fillStyle = '#FBF8F4'; x.beginPath(); x.arc(46, 770, 22, 0, 7); x.fill(); x.beginPath(); x.arc(W - 46, 770, 22, 0, 7); x.fill();
     const qs = 460, qy = 856, cardW = qs + 56;
     const qc = document.createElement('canvas');
-    new window.QRious({ element: qc, value: state.inviteCode, size: qs, level: 'H', background: '#ffffff', foreground: '#17181d' });
+    new window.QRious({ element: qc, value: verifyUrl(state.inviteCode), size: qs, level: 'H', background: '#ffffff', foreground: '#17181d' });
     x.fillStyle = '#ffffff'; x.strokeStyle = 'rgba(27,28,32,.12)'; x.lineWidth = 1;
     rr(cx - cardW / 2, qy, cardW, cardW, 18); x.fill(); x.stroke();
     x.drawImage(qc, cx - qs / 2, qy + 28);
