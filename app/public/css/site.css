@@ -230,27 +230,6 @@ body {
   transition: border-color .2s;
 }
 .rsvp-input:focus { border-color: var(--ink); }
-.autocomplete-list {
-  position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: #fff;
-  border: 1px solid rgba(27, 28, 32, .15); border-radius: 8px; box-shadow: 0 18px 40px -20px rgba(27, 28, 32, .35);
-  max-height: 220px; overflow-y: auto; z-index: 5; display: none; list-style: none; margin: 0; padding: 6px;
-}
-.autocomplete-list.is-open { display: block; }
-.autocomplete-item { padding: 11px 12px; font-size: 15px; cursor: pointer; border-radius: 6px; }
-.autocomplete-item:hover, .autocomplete-item.is-active { background: rgba(190, 148, 131, .14); }
-.autocomplete-empty { padding: 11px 12px; font-size: 13px; color: var(--slate); }
-
-.selected-name-chip {
-  display: none; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 16px;
-  border: 1px solid rgba(27, 28, 32, .15); border-radius: 8px; margin-bottom: 26px; background: rgba(190, 148, 131, .08);
-}
-.selected-name-chip.is-visible { display: flex; }
-.selected-name-chip .chip-name { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--ink); }
-.selected-name-chip button {
-  border: none; background: none; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: .14em;
-  text-transform: uppercase; color: var(--slate); cursor: pointer; padding: 4px;
-}
-.selected-name-chip button:hover { color: var(--ink); }
 
 .attend-choices { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
 .choice-btn {

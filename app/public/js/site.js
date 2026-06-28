@@ -14,12 +14,7 @@
     stepTicket: document.getElementById('stepTicket'),
     stepDeclined: document.getElementById('stepDeclined'),
 
-    nameInputWrap: document.getElementById('nameInputWrap'),
     nameInput: document.getElementById('rsvpNameInput'),
-    autocompleteList: document.getElementById('autocompleteList'),
-    selectedChip: document.getElementById('selectedChip'),
-    selectedChipName: document.getElementById('selectedChipName'),
-    changeNameBtn: document.getElementById('changeNameBtn'),
 
     btnYes: document.getElementById('btnYes'),
     btnNo: document.getElementById('btnNo'),
@@ -42,7 +37,6 @@
     attending: null,
     inviteCode: null,
   };
-  let activeIndex = -1;
   let drawnForCode = null;
 
   // ── Countdown ──────────────────────────────────────────────────────────
@@ -90,107 +84,7 @@
     drawnForCode = state.inviteCode;
   }
 
-  // ── Name autocomplete ────────────────────────────────────────────────────
-  function debounce(fn, delay) {
-    let t;
-    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
-  }
-
-  function closeList() {
-    els.autocompleteList.classList.remove('is-open');
-    els.autocompleteList.innerHTML = '';
-    activeIndex = -1;
-  }
-
-  function renderResults(results) {
-    activeIndex = -1;
-    if (!results.length) {
-      els.autocompleteList.innerHTML = '<li class="autocomplete-empty">No match yet — keep typing your name as invited.</li>';
-      els.autocompleteList.classList.add('is-open');
-      return;
-    }
-    els.autocompleteList.innerHTML = results
-      .map((r, i) => `<li class="autocomplete-item" data-index="${i}" data-token="${r.token}">${escapeHtml(r.name)}</li>`)
-      .join('');
-    els.autocompleteList.classList.add('is-open');
-  }
-
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  }
-
-  let lastResults = [];
-  const runSearch = debounce(async (query) => {
-    if (query.length < 2) { closeList(); return; }
-    try {
-      const res = await fetch(`/api/guests/search?q=${encodeURIComponent(query)}`);
-      lastResults = await res.json();
-      renderResults(lastResults);
-    } catch (e) {
-      closeList();
-    }
-  }, 150);
-
-  els.nameInput.addEventListener('input', (e) => {
-    clearError();
-    runSearch(e.target.value.trim());
-  });
-
-  els.nameInput.addEventListener('keydown', (e) => {
-    const items = els.autocompleteList.querySelectorAll('.autocomplete-item');
-    if (!items.length) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      activeIndex = Math.min(activeIndex + 1, items.length - 1);
-      highlight(items);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      activeIndex = Math.max(activeIndex - 1, 0);
-      highlight(items);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (activeIndex >= 0 && lastResults[activeIndex]) selectGuest(lastResults[activeIndex]);
-    } else if (e.key === 'Escape') {
-      closeList();
-    }
-  });
-
-  function highlight(items) {
-    items.forEach((el, i) => el.classList.toggle('is-active', i === activeIndex));
-  }
-
-  els.autocompleteList.addEventListener('click', (e) => {
-    const li = e.target.closest('.autocomplete-item[data-token]');
-    if (!li) return;
-    const idx = Number(li.dataset.index);
-    if (lastResults[idx]) selectGuest(lastResults[idx]);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!els.nameInputWrap.contains(e.target)) closeList();
-  });
-
-  function selectGuest(guest) {
-    state.token = guest.token;
-    state.name = guest.name;
-    els.selectedChipName.textContent = guest.name;
-    els.selectedChip.classList.add('is-visible');
-    els.nameInputWrap.style.display = 'none';
-    closeList();
-    els.nameInput.value = '';
-    clearError();
-  }
-
-  function clearSelection() {
-    state.token = null;
-    state.name = '';
-    els.selectedChip.classList.remove('is-visible');
-    els.nameInputWrap.style.display = '';
-    els.nameInput.value = '';
-    els.nameInput.focus();
-  }
-
-  els.changeNameBtn.addEventListener('click', clearSelection);
+  els.nameInput.addEventListener('input', clearError);
 
   // ── Attending choice ─────────────────────────────────────────────────────
   function setAttending(val) {
@@ -212,17 +106,19 @@
 
   // ── Submit ────────────────────────────────────────────────────────────────
   els.submitRsvp.addEventListener('click', async () => {
-    if (!state.token) { showError('Please select your name from the guest list.'); return; }
+    const name = els.nameInput.value.trim();
+    if (!name) { showError('Please enter your full name.'); return; }
     if (!state.attending) { showError('Please let us know if you can make it.'); return; }
     els.submitRsvp.disabled = true;
     try {
       const res = await fetch('/api/rsvp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: state.token, attending: state.attending }),
+        body: JSON.stringify({ name, attending: state.attending }),
       });
       if (!res.ok) throw new Error('rsvp_failed');
       const data = await res.json();
+      state.token = data.token;
       state.name = data.name;
       state.inviteCode = data.inviteCode;
       localStorage.setItem(STORAGE_KEY, state.token);
@@ -236,11 +132,7 @@
 
   // ── Edit response ─────────────────────────────────────────────────────────
   function editResponse() {
-    if (state.token && state.name) {
-      els.selectedChipName.textContent = state.name;
-      els.selectedChip.classList.add('is-visible');
-      els.nameInputWrap.style.display = 'none';
-    }
+    els.nameInput.value = state.name;
     setAttending(state.attending);
     goToStep('form');
   }

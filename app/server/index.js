@@ -4,14 +4,7 @@ const express = require('express');
 const session = require('express-session');
 
 const db = require('./db');
-const { generateInviteCode } = require('./ids');
-const { seedGuests } = require('./seed');
-
-const guestCount = db.prepare('SELECT COUNT(*) AS n FROM guests').get().n;
-if (guestCount === 0) {
-  console.log('[startup] Guest list is empty — seeding 250 placeholder guests.');
-  seedGuests();
-}
+const { generateInviteCode, generatePublicToken } = require('./ids');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'wrapped-in-love';
@@ -49,20 +42,6 @@ function nowIso() {
 
 // ── Guest-facing API ───────────────────────────────────────────────────────
 
-// Name search for the RSVP autocomplete. Requires 2+ characters and caps
-// results so the full guest list can't be scraped by an outsider with the link.
-app.get('/api/guests/search', (req, res) => {
-  const q = String(req.query.q || '').trim().toLowerCase();
-  if (q.length < 2) return res.json([]);
-  const rows = db
-    .prepare(
-      `SELECT public_token AS token, name FROM guests
-       WHERE search_name LIKE ? ORDER BY name LIMIT 8`
-    )
-    .all(`%${q}%`);
-  res.json(rows);
-});
-
 app.get('/api/rsvp/:token', (req, res) => {
   const guest = db
     .prepare(
@@ -74,26 +53,44 @@ app.get('/api/rsvp/:token', (req, res) => {
   res.json(guest);
 });
 
+// No master guest list to query against — guests type their name freely and
+// we match-or-create by exact (case-insensitive) name. Identity is verified
+// by the couple offline against their physical guest list, not by this site.
 app.post('/api/rsvp', (req, res) => {
-  const { token, attending } = req.body || {};
+  const { attending } = req.body || {};
+  const name = String((req.body && req.body.name) || '').trim().replace(/\s+/g, ' ');
+  if (!name) return res.status(400).json({ error: 'invalid_name' });
   if (attending !== 'yes' && attending !== 'no') {
     return res.status(400).json({ error: 'invalid_attending' });
   }
-  const guest = db.prepare('SELECT * FROM guests WHERE public_token = ?').get(token);
-  if (!guest) return res.status(404).json({ error: 'not_found' });
 
-  let inviteCode = guest.invite_code;
+  const searchName = name.toLowerCase();
+  const guest = db.prepare('SELECT * FROM guests WHERE search_name = ?').get(searchName);
+  const respondedAt = nowIso();
+
+  let inviteCode = guest ? guest.invite_code : null;
   if (attending === 'yes' && !inviteCode) {
     do {
       inviteCode = generateInviteCode();
     } while (db.prepare('SELECT 1 FROM guests WHERE invite_code = ?').get(inviteCode));
   }
 
-  db.prepare(
-    `UPDATE guests SET attending = ?, invite_code = ?, responded_at = ? WHERE public_token = ?`
-  ).run(attending, inviteCode, nowIso(), token);
+  if (guest) {
+    db.prepare(
+      `UPDATE guests SET attending = ?, invite_code = ?, responded_at = ? WHERE public_token = ?`
+    ).run(attending, inviteCode, respondedAt, guest.public_token);
+    return res.json({ token: guest.public_token, name: guest.name, attending, inviteCode, respondedAt });
+  }
 
-  res.json({ name: guest.name, attending, inviteCode, respondedAt: nowIso() });
+  let token = generatePublicToken();
+  while (db.prepare('SELECT 1 FROM guests WHERE public_token = ?').get(token)) {
+    token = generatePublicToken();
+  }
+  db.prepare(
+    `INSERT INTO guests (public_token, name, search_name, attending, invite_code, responded_at)
+     VALUES (?, ?, ?, ?, ?, ?)`
+  ).run(token, name, searchName, attending, inviteCode, respondedAt);
+  res.json({ token, name, attending, inviteCode, respondedAt });
 });
 
 // ── Admin auth ──────────────────────────────────────────────────────────────

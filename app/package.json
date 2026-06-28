@@ -5,7 +5,6 @@
   "description": "Viola & Kelvin wedding invitation site: RSVP, QR pass, and door check-in scanning.",
   "type": "commonjs",
   "scripts": {
-    "seed": "node server/seed.js",
     "start": "node server/index.js",
     "dev": "node --watch server/index.js"
   },
