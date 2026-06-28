@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Login — Viola &amp; Kelvin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/admin.css">
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-panel">
+    <div class="login-mark">V &amp; K</div>
+    <div class="login-sub">Staff &amp; Admin Access</div>
+    <form id="loginForm">
+      <label class="field-label" for="passwordInput">Password</label>
+      <input type="password" id="passwordInput" class="text-input" autocomplete="current-password" autofocus>
+      <button type="submit" class="btn-submit-admin" id="loginBtn">Sign In</button>
+      <div class="form-error" id="loginError" style="display:none"></div>
+    </form>
+  </div>
+</div>
+
+<script src="./js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guest List — Admin — Viola &amp; Kelvin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/admin.css">
+</head>
+<body>
+
+<div class="admin-bar">
+  <a href="./dashboard.html" class="admin-logo">V &amp; K — Admin</a>
+  <nav class="admin-nav">
+    <a href="./dashboard.html" class="is-active">Guest List</a>
+    <a href="./scan.html">Scan to Verify</a>
+    <button type="button" class="admin-logout" id="logoutBtn">Log Out</button>
+  </nav>
+</div>
+
+<main class="admin-main">
+  <div class="dash-head">
+    <h1 class="dash-title">Guest List</h1>
+    <a href="/api/admin/export.csv" class="dash-export">&#8595; Export CSV</a>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num" id="statTotal">&ndash;</div><div class="stat-label">Total</div></div>
+    <div class="stat-card"><div class="stat-num" id="statAttending">&ndash;</div><div class="stat-label">Attending</div></div>
+    <div class="stat-card"><div class="stat-num" id="statDeclined">&ndash;</div><div class="stat-label">Declined</div></div>
+    <div class="stat-card"><div class="stat-num" id="statNoResponse">&ndash;</div><div class="stat-label">No Response</div></div>
+    <div class="stat-card"><div class="stat-num" id="statCheckedIn">&ndash;</div><div class="stat-label">Checked In</div></div>
+  </div>
+
+  <div class="dash-toolbar">
+    <input type="text" id="guestSearch" class="text-input dash-search" placeholder="Search guests by name&hellip;">
+    <div class="filter-pills">
+      <button type="button" class="filter-pill is-active" data-filter="all">All</button>
+      <button type="button" class="filter-pill" data-filter="yes">Attending</button>
+      <button type="button" class="filter-pill" data-filter="no">Declined</button>
+      <button type="button" class="filter-pill" data-filter="pending">No Response</button>
+      <button type="button" class="filter-pill" data-filter="checked">Checked In</button>
+    </div>
+  </div>
+
+  <div class="guest-table-wrap">
+    <table class="guest-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>RSVP</th>
+          <th>Invite Code</th>
+          <th>Responded</th>
+          <th>Checked In</th>
+        </tr>
+      </thead>
+      <tbody id="guestTableBody"></tbody>
+    </table>
+  </div>
+</main>
+
+<script src="./js/dashboard.js"></script>
+</body>
+</html>

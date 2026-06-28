@@ -1,0 +1,23 @@
+{
+  "name": "wrapped-in-love-wedding",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Viola & Kelvin wedding invitation site: RSVP, QR pass, and door check-in scanning.",
+  "type": "commonjs",
+  "scripts": {
+    "seed": "node server/seed.js",
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.1"
+  },
+  "devDependencies": {
+    "html5-qrcode": "^2.3.8",
+    "qrious": "^4.0.2"
+  }
+}

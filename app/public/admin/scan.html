@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scan to Verify — Admin — Viola &amp; Kelvin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/admin.css">
+<script src="./js/vendor/html5-qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="admin-bar">
+  <a href="./dashboard.html" class="admin-logo">V &amp; K — Admin</a>
+  <nav class="admin-nav">
+    <a href="./dashboard.html">Guest List</a>
+    <a href="./scan.html" class="is-active">Scan to Verify</a>
+    <button type="button" class="admin-logout" id="logoutBtn">Log Out</button>
+  </nav>
+</div>
+
+<main class="admin-main">
+  <div class="scan-wrap">
+    <h1 class="scan-title">Scan to Verify</h1>
+    <p class="scan-sub">Point the camera at a guest's QR pass, or enter their code manually.</p>
+
+    <div id="qrReaderWrap"><div id="qrReader"></div></div>
+
+    <form class="scan-manual" id="manualForm">
+      <input type="text" id="manualCode" class="text-input" placeholder="e.g. KV-7F3K9P" autocomplete="off">
+      <button type="submit" class="btn-check">Check In</button>
+    </form>
+
+    <div class="scan-result" id="scanResult">
+      <div class="scan-result-status">Ready — awaiting scan</div>
+    </div>
+
+    <button type="button" class="scan-toggle" id="cameraToggle">Pause Camera</button>
+  </div>
+</main>
+
+<script src="./js/scan.js"></script>
+</body>
+</html>
