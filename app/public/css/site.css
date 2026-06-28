@@ -207,6 +207,7 @@ body {
 .gift-card:hover { border-color: var(--accent-line); }
 .gift-label { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--blush); margin-bottom: 12px; }
 .gift-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--ink); }
+.gift-address { font-weight: 300; font-size: 13px; line-height: 1.6; color: var(--body-text); margin-top: 8px; }
 
 /* ── RSVP ── */
 .rsvp-section { background: var(--dark); color: var(--ivory); }
