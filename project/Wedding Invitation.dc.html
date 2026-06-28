@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#FBF8F4;color:#1B1C20;-webkit-font-smoothing:antialiased}
+  ::selection{background:#E7CFC4}
+  @keyframes vk-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes vk-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+  @media (max-width:640px){
+    .vk-hero{padding-top:88px !important;min-height:auto !important}
+    .vk-hero-inner{gap:30px !important}
+    .vk-names{font-size:clamp(48px,15.5vw,88px) !important}
+    .vk-hero-cta{flex-direction:column !important}
+    .vk-hero-cta a{width:100% !important;text-align:center !important}
+    .vk-cd{gap:16px !important}
+    .vk-cd > div{min-width:30% !important}
+    .vk-sec{padding-top:64px !important;padding-bottom:64px !important}
+  }
+  @media (max-width:380px){
+    .vk-names{font-size:14vw !important}
+    .vk-cd > div{min-width:40% !important}
+  }
+</style>
+</helmet>
+
+<div style="font-family:'Jost',sans-serif;background:#FBF8F4;overflow-x:hidden">
+
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,6vw,64px);height:62px;background:rgba(251,248,244,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,28,32,.08)">
+    <a href="#top" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;letter-spacing:.04em;color:#1B1C20;text-decoration:none">V &amp; K</a>
+    <a href="#rsvp" style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#FBF8F4;background:#1B1C20;padding:11px 22px;border-radius:100px;text-decoration:none" style-hover="background:#46403a">RSVP</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="top" data-screen-label="Hero" class="vk-hero" style="position:relative;min-height:100svh;display:flex;align-items:center;padding:96px clamp(20px,6vw,64px) clamp(60px,8vh,90px)">
+    <div class="vk-hero-inner" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(36px,6vw,80px);max-width:1140px;margin:0 auto;width:100%">
+
+      <div style="flex:1 1 380px;max-width:560px">
+        <div style="font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#5B6472;font-weight:400;margin-bottom:18px">Together with their families</div>
+        <h1 class="vk-names" style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;line-height:.9;color:#1B1C20;font-size:clamp(58px,11vw,122px)">
+          <span style="display:block">Viola</span>
+          <span style="display:block;font-style:italic;font-weight:400;color:#BE9483;font-size:.46em;margin:.06em 0 .04em">&amp;</span>
+          <span style="display:block">Kelvin</span>
+        </h1>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(22px,4vw,32px);color:#5B6472;margin:18px 0 0">Wrapped in Love</p>
+
+        <div style="display:flex;align-items:center;gap:14px;margin:30px 0 26px">
+          <span style="height:1px;width:52px;background:#C2A093"></span>
+          <span style="width:7px;height:7px;border-radius:50%;background:#C2A093"></span>
+          <span style="height:1px;width:52px;background:#C2A093"></span>
+        </div>
+
+        <div style="font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:#1B1C20;font-weight:400;margin-bottom:8px">Friday &middot; December 18, 2026 &middot; 5:00 PM</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(20px,3.4vw,26px);color:#5B6472">Zaicha Lagoon D&rsquo;or</div>
+
+        <div class="vk-hero-cta" style="display:flex;flex-wrap:wrap;gap:14px;margin-top:34px">
+          <a href="#rsvp" style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#FBF8F4;background:#1B1C20;padding:16px 34px;border-radius:100px;text-decoration:none" style-hover="background:#46403a">Accept the Invitation</a>
+          <a href="#details" style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#1B1C20;background:transparent;border:1px solid rgba(27,28,32,.25);padding:15px 30px;border-radius:100px;text-decoration:none" style-hover="border-color:#1B1C20">View Details</a>
+        </div>
+      </div>
+
+      <div style="flex:0 1 340px;display:flex;justify-content:center">
+        <div style="position:relative">
+          <div style="width:clamp(210px,62vw,330px);aspect-ratio:3/4;border-radius:170px 170px 14px 14px;overflow:hidden;border:1px solid rgba(27,28,32,.12);box-shadow:0 40px 70px -34px rgba(27,28,32,.34);background:#EFE7DE">
+            <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="vk-hero-portrait" shape="rect" radius="0" placeholder="Drop a portrait of the couple" hint-size="100%,100%" style="width:100%;height:100%;display:block"></x-import>
+          </div>
+          <div style="position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);background:#FBF8F4;border:1px solid rgba(27,28,32,.12);font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.06em;color:#1B1C20;padding:7px 22px;border-radius:100px;box-shadow:0 10px 24px -14px rgba(27,28,32,.3)">est. 2026</div>
+        </div>
+      </div>
+
+    </div>
+    <a href="#countdown" style="position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:#5B6472;text-decoration:none;font-size:11px;letter-spacing:.24em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <span>Scroll</span>
+      <span style="animation:vk-bob 2.2s ease-in-out infinite">&#8595;</span>
+    </a>
+  </section>
+
+  <!-- COUNTDOWN -->
+  <sc-if value="{{ showCountdown }}" hint-placeholder-val="{{ true }}">
+  <section id="countdown" data-screen-label="Countdown" style="background:#2A2622;color:#FBF8F4;padding:clamp(48px,8vh,72px) clamp(20px,6vw,64px);text-align:center">
+    <div style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:rgba(251,248,244,.55);margin-bottom:30px">Counting down to forever</div>
+    <div class="vk-cd" style="display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,6vw,64px);max-width:760px;margin:0 auto">
+      <div style="min-width:64px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(42px,9vw,74px);line-height:1;font-weight:500">{{ cdDays }}</div>
+        <div style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(251,248,244,.55);margin-top:10px">Days</div>
+      </div>
+      <div style="min-width:64px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(42px,9vw,74px);line-height:1;font-weight:500">{{ cdHours }}</div>
+        <div style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(251,248,244,.55);margin-top:10px">Hours</div>
+      </div>
+      <div style="min-width:64px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(42px,9vw,74px);line-height:1;font-weight:500">{{ cdMins }}</div>
+        <div style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(251,248,244,.55);margin-top:10px">Minutes</div>
+      </div>
+      <div style="min-width:64px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(42px,9vw,74px);line-height:1;font-weight:500">{{ cdSecs }}</div>
+        <div style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(251,248,244,.55);margin-top:10px">Seconds</div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- OUR STORY -->
+  <section id="story" data-screen-label="Our Story" class="vk-sec" style="padding:clamp(80px,13vh,140px) clamp(20px,6vw,64px)">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:clamp(40px,6vw,80px);max-width:1080px;margin:0 auto">
+      <div style="flex:1 1 320px">
+        <div style="width:100%;aspect-ratio:4/5;border-radius:8px;overflow:hidden;border:1px solid rgba(27,28,32,.1);box-shadow:0 40px 70px -40px rgba(27,28,32,.3);background:#EFE7DE">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="vk-story-photo" shape="rect" radius="0" placeholder="Drop a photo of the two of you" hint-size="100%,100%" style="width:100%;height:100%;display:block"></x-import>
+        </div>
+      </div>
+      <div style="flex:1 1 340px">
+        <div style="font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#5B6472;margin-bottom:18px">Our Story</div>
+        <h2 style="margin:0 0 22px;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,6vw,58px);line-height:1.04;color:#1B1C20">How it began</h2>
+        <p style="font-weight:300;font-size:clamp(15px,2.4vw,17px);line-height:1.9;color:#4A4A4A;margin:0 0 18px;text-wrap:pretty">What started as a chance meeting on a warm evening grew, slowly and surely, into something we couldn&rsquo;t imagine living without. Through quiet mornings and long adventures, we found home in one another.</p>
+        <p style="font-weight:300;font-size:clamp(15px,2.4vw,17px);line-height:1.9;color:#4A4A4A;margin:0;text-wrap:pretty">Now, surrounded by the people we love most, we&rsquo;re ready to say forever. We would be honoured to have you there as we begin this next chapter.</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(22px,3.6vw,30px);color:#BE9483;margin:30px 0 0">&mdash; Viola &amp; Kelvin</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENT DETAILS -->
+  <section id="details" data-screen-label="Details" class="vk-sec" style="background:#F4ECE4;padding:clamp(80px,13vh,140px) clamp(20px,6vw,64px)">
+    <div style="max-width:1000px;margin:0 auto;text-align:center">
+      <div style="font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#5B6472;margin-bottom:16px">The Celebration</div>
+      <h2 style="margin:0 0 14px;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,6vw,58px);line-height:1.04;color:#1B1C20">When &amp; Where</h2>
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:24px 0 50px">
+        <span style="height:1px;width:46px;background:#C2A093"></span>
+        <span style="width:6px;height:6px;border-radius:50%;background:#C2A093"></span>
+        <span style="height:1px;width:46px;background:#C2A093"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;text-align:left">
+        <div style="background:#FBF8F4;border:1px solid rgba(27,28,32,.1);border-radius:8px;padding:clamp(28px,4vw,40px)">
+          <div style="font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:#BE9483;margin-bottom:16px">The Day</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,38px);color:#1B1C20;line-height:1.1;margin-bottom:8px">Friday, December 18</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#5B6472;margin-bottom:20px">2026</div>
+          <div style="font-weight:300;font-size:16px;line-height:2;color:#4A4A4A">Arrival &amp; welcome drinks &middot; 5:00 PM<br>Ceremony &middot; 5:30 PM<br>Dinner &amp; dancing &middot; 7:00 PM</div>
+        </div>
+        <div style="background:#FBF8F4;border:1px solid rgba(27,28,32,.1);border-radius:8px;padding:clamp(28px,4vw,40px);display:flex;flex-direction:column">
+          <div style="font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:#BE9483;margin-bottom:16px">The Venue</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,38px);color:#1B1C20;line-height:1.1;margin-bottom:12px">Zaicha Lagoon D&rsquo;or</div>
+          <div style="font-weight:300;font-size:16px;line-height:1.9;color:#4A4A4A;margin-bottom:26px">123 Lagoon Drive, Garden District<br>Reception in the Waterside Pavilion</div>
+          <a href="https://www.google.com/maps/search/?api=1&query=Zaicha+Lagoon+D%27or" target="_blank" rel="noopener" style="margin-top:auto;align-self:flex-start;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#1B1C20;border:1px solid rgba(27,28,32,.25);padding:13px 26px;border-radius:100px;text-decoration:none" style-hover="border-color:#1B1C20;background:#fff">Get Directions &#8599;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRESS CODE -->
+  <section id="dress" data-screen-label="Dress Code" class="vk-sec" style="padding:clamp(80px,13vh,140px) clamp(20px,6vw,64px)">
+    <div style="max-width:820px;margin:0 auto;text-align:center">
+      <div style="font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#5B6472;margin-bottom:16px">Dress Code</div>
+      <h2 style="margin:0 0 18px;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,6vw,58px);line-height:1.04;color:#1B1C20">Garden Formal</h2>
+      <p style="font-weight:300;font-size:clamp(15px,2.4vw,18px);line-height:1.9;color:#4A4A4A;margin:0 auto 44px;max-width:560px;text-wrap:pretty">We&rsquo;d love to see you dressed elegantly in soft, romantic tones. Think flowing fabrics and timeless silhouettes &mdash; a palette to complement our garden setting.</p>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,5vw,44px)">
+        <div style="text-align:center"><div style="width:58px;height:58px;border-radius:50%;background:#C8A39A;margin:0 auto 12px;box-shadow:0 8px 18px -10px rgba(27,28,32,.4)"></div><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#5B6472">Dusty Rose</div></div>
+        <div style="text-align:center"><div style="width:58px;height:58px;border-radius:50%;background:#A7B295;margin:0 auto 12px;box-shadow:0 8px 18px -10px rgba(27,28,32,.4)"></div><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#5B6472">Sage</div></div>
+        <div style="text-align:center"><div style="width:58px;height:58px;border-radius:50%;background:#E7D6BE;margin:0 auto 12px;box-shadow:0 8px 18px -10px rgba(27,28,32,.4)"></div><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#5B6472">Champagne</div></div>
+        <div style="text-align:center"><div style="width:58px;height:58px;border-radius:50%;background:#7C8AA0;margin:0 auto 12px;box-shadow:0 8px 18px -10px rgba(27,28,32,.4)"></div><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#5B6472">Slate Blue</div></div>
+        <div style="text-align:center"><div style="width:58px;height:58px;border-radius:50%;background:#3A3A3C;margin:0 auto 12px;box-shadow:0 8px 18px -10px rgba(27,28,32,.4)"></div><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#5B6472">Charcoal</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GOOD TO KNOW -->
+  <section id="info" data-screen-label="Good to Know" class="vk-sec" style="background:#F4ECE4;padding:clamp(80px,13vh,140px) clamp(20px,6vw,64px)">
+    <div style="max-width:1000px;margin:0 auto;text-align:center">
+      <div style="font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#5B6472;margin-bottom:16px">Good to Know</div>
+      <h2 style="margin:0 0 50px;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,6vw,58px);line-height:1.04;color:#1B1C20">A few details</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;text-align:left">
+        <div style="background:#FBF8F4;border:1px solid rgba(27,28,32,.1);border-radius:8px;padding:clamp(26px,4vw,36px)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#1B1C20;margin-bottom:12px">Adults Only</div>
+          <p style="font-weight:300;font-size:15px;line-height:1.85;color:#4A4A4A;margin:0;text-wrap:pretty">As much as we adore your little ones, we&rsquo;ve planned an adults-only evening so everyone can relax and celebrate. Thank you for understanding.</p>
+        </div>
+        <div style="background:#FBF8F4;border:1px solid rgba(27,28,32,.1);border-radius:8px;padding:clamp(26px,4vw,36px)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#1B1C20;margin-bottom:12px">Kindly RSVP</div>
+          <p style="font-weight:300;font-size:15px;line-height:1.85;color:#4A4A4A;margin:0;text-wrap:pretty">Please confirm your attendance by <strong style="font-weight:500;color:#1B1C20">November 18, 2026</strong>. You&rsquo;ll receive a personal QR pass to present at the entrance.</p>
+        </div>
+        <div style="background:#FBF8F4;border:1px solid rgba(27,28,32,.1);border-radius:8px;padding:clamp(26px,4vw,36px)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#1B1C20;margin-bottom:12px">Parking</div>
+          <p style="font-weight:300;font-size:15px;line-height:1.85;color:#4A4A4A;margin:0;text-wrap:pretty">Complimentary valet and self-parking are available on-site. The Waterside Pavilion is a short, lit walk from the main entrance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GIFTS -->
+  <sc-if value="{{ showGifts }}" hint-placeholder-val="{{ true }}">
+  <section id="gifts" data-screen-label="Gifts" class="vk-sec" style="padding:clamp(80px,13vh,140px) clamp(20px,6vw,64px)">
+    <div style="max-width:980px;margin:0 auto;text-align:center">
+      <div style="font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#5B6472;margin-bottom:16px">With Gratitude</div>
+      <h2 style="margin:0 0 18px;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,6vw,58px);line-height:1.04;color:#1B1C20">Gifts &amp; Registry</h2>
+      <p style="font-weight:300;font-size:clamp(15px,2.4vw,18px);line-height:1.9;color:#4A4A4A;margin:0 auto 46px;max-width:560px;text-wrap:pretty">Your presence is truly the greatest gift of all. Should you wish to give a little something, we&rsquo;re gratefully collecting gift cards from:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:20px">
+        <div style="border:1px solid rgba(27,28,32,.12);border-radius:8px;padding:34px 20px;background:#FBF8F4" style-hover="border-color:#C2A093"><div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#BE9483;margin-bottom:12px">Gift Card</div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1B1C20">M2 Store</div></div>
+        <div style="border:1px solid rgba(27,28,32,.12);border-radius:8px;padding:34px 20px;background:#FBF8F4" style-hover="border-color:#C2A093"><div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#BE9483;margin-bottom:12px">Gift Card</div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1B1C20">Oushaili</div></div>
+        <div style="border:1px solid rgba(27,28,32,.12);border-radius:8px;padding:34px 20px;background:#FBF8F4" style-hover="border-color:#C2A093"><div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#BE9483;margin-bottom:12px">Gift Card</div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1B1C20">China Mall</div></div>
+        <div style="border:1px solid rgba(27,28,32,.12);border-radius:8px;padding:34px 20px;background:#FBF8F4" style-hover="border-color:#C2A093"><div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#BE9483;margin-bottom:12px">Gift Card</div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1B1C20">JMART</div></div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- RSVP -->
+  <section id="rsvp" data-screen-label="RSVP" class="vk-sec" style="background:#2A2622;color:#FBF8F4;padding:clamp(80px,13vh,140px) clamp(20px,6vw,64px)">
+    <div style="max-width:620px;margin:0 auto;text-align:center">
+      <div style="font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:rgba(251,248,244,.55);margin-bottom:16px">RSVP</div>
+      <h2 style="margin:0 0 16px;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(36px,6.5vw,62px);line-height:1.02;color:#FBF8F4">Will you join us?</h2>
+      <p style="font-weight:300;font-size:clamp(15px,2.4vw,17px);line-height:1.8;color:rgba(251,248,244,.7);margin:0 auto 40px;max-width:430px">Kindly respond by November 18, 2026. Accept below and you&rsquo;ll receive your personal QR pass for the day.</p>
+
+      <!-- FORM -->
+      <sc-if value="{{ isForm }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#FBF8F4;color:#1B1C20;border-radius:14px;padding:clamp(28px,5vw,44px);text-align:left;box-shadow:0 50px 90px -50px rgba(0,0,0,.6)">
+        <label style="display:block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5B6472;margin-bottom:10px">Full Name</label>
+        <input value="{{ name }}" onInput="{{ onName }}" placeholder="Your name as you'd like it on the pass" style="width:100%;padding:15px 16px;border:1px solid rgba(27,28,32,.2);border-radius:8px;font-family:'Jost',sans-serif;font-size:16px;color:#1B1C20;background:#fff;outline:none;margin-bottom:26px" style-focus="border-color:#1B1C20">
+
+        <label style="display:block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5B6472;margin-bottom:12px">Will you be attending?</label>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+          <button onClick="{{ pickYes }}" style="{{ yesBtnStyle }}">Joyfully Accepts</button>
+          <button onClick="{{ pickNo }}" style="{{ noBtnStyle }}">Regretfully Declines</button>
+        </div>
+
+        <sc-if value="{{ error }}" hint-placeholder-val="">
+          <div style="color:#A9544A;font-size:13px;margin:14px 0 0">{{ error }}</div>
+        </sc-if>
+
+        <button onClick="{{ submit }}" style="width:100%;margin-top:26px;padding:17px;background:#1B1C20;color:#FBF8F4;border:none;border-radius:100px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer" style-hover="background:#46403a">Send My RSVP</button>
+      </div>
+      </sc-if>
+
+      <!-- TICKET -->
+      <sc-if value="{{ isTicket }}" hint-placeholder-val="">
+      <div>
+        <div style="background:#FBF8F4;color:#1B1C20;border-radius:16px;overflow:hidden;box-shadow:0 50px 90px -50px rgba(0,0,0,.6);text-align:center">
+          <div style="padding:clamp(28px,5vw,40px) 28px 26px">
+            <div style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#BE9483;margin-bottom:14px">You&rsquo;re going! &middot; Admit One</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(34px,7vw,48px);font-weight:500;line-height:1;color:#1B1C20">Viola &amp; Kelvin</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:#5B6472;margin-top:6px">Wrapped in Love</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:20px 0 4px">
+              <span style="height:1px;width:36px;background:#C2A093"></span>
+              <span style="width:5px;height:5px;border-radius:50%;background:#C2A093"></span>
+              <span style="height:1px;width:36px;background:#C2A093"></span>
+            </div>
+            <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#1B1C20;margin-top:14px">Dec 18, 2026 &middot; 5:00 PM</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#5B6472;margin-top:2px">Zaicha Lagoon D&rsquo;or</div>
+          </div>
+          <div style="position:relative;height:30px">
+            <div style="position:absolute;top:50%;left:18px;right:18px;border-top:2px dashed rgba(27,28,32,.22)"></div>
+            <div style="position:absolute;top:50%;left:-16px;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:#2A2622"></div>
+            <div style="position:absolute;top:50%;right:-16px;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:#2A2622"></div>
+          </div>
+          <div style="padding:24px 28px clamp(30px,5vw,40px)">
+            <div style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#5B6472;margin-bottom:6px">This pass admits</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,5vw,34px);color:#1B1C20;margin-bottom:22px">{{ ticketName }}</div>
+            <div style="display:inline-block;padding:16px;background:#fff;border:1px solid rgba(27,28,32,.12);border-radius:12px;box-shadow:0 14px 30px -18px rgba(27,28,32,.3)">
+              <canvas ref="{{ setQr }}" width="220" height="220" style="display:block;width:200px;height:200px"></canvas>
+            </div>
+            <div style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#5B6472;margin-top:18px">Invitation Code</div>
+            <div style="font-size:18px;letter-spacing:.18em;color:#1B1C20;margin-top:4px">{{ inviteId }}</div>
+            <div style="font-weight:300;font-size:13px;color:#8A8378;margin-top:16px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px">Please present this code at the entrance.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:26px">
+          <button onClick="{{ download }}" style="padding:15px 32px;background:#FBF8F4;color:#1B1C20;border:none;border-radius:100px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer" style-hover="background:#fff">&#8595; Download My Pass</button>
+          <button onClick="{{ editRsvp }}" style="padding:14px 28px;background:transparent;color:rgba(251,248,244,.8);border:1px solid rgba(251,248,244,.3);border-radius:100px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer" style-hover="border-color:#FBF8F4;color:#FBF8F4">Edit Response</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- DECLINED -->
+      <sc-if value="{{ isDeclined }}" hint-placeholder-val="">
+      <div style="background:#FBF8F4;color:#1B1C20;border-radius:14px;padding:clamp(36px,6vw,52px);box-shadow:0 50px 90px -50px rgba(0,0,0,.6)">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(30px,6vw,44px);color:#1B1C20;margin-bottom:14px">We&rsquo;ll miss you, {{ ticketName }}</div>
+        <p style="font-weight:300;font-size:16px;line-height:1.9;color:#4A4A4A;margin:0 0 28px;text-wrap:pretty">Thank you for letting us know. You&rsquo;ll be in our hearts on the day &mdash; we hope to celebrate with you very soon.</p>
+        <button onClick="{{ editRsvp }}" style="padding:14px 30px;background:transparent;color:#1B1C20;border:1px solid rgba(27,28,32,.25);border-radius:100px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer" style-hover="border-color:#1B1C20">Change My Response</button>
+      </div>
+      </sc-if>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background:#FBF8F4;text-align:center;padding:clamp(60px,10vh,96px) clamp(20px,6vw,64px) clamp(40px,6vh,64px)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(40px,9vw,70px);font-weight:500;color:#1B1C20;line-height:1">V &amp; K</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(18px,3vw,24px);color:#BE9483;margin-top:8px">Wrapped in Love</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:28px 0">
+      <span style="height:1px;width:40px;background:#C2A093"></span>
+      <span style="width:5px;height:5px;border-radius:50%;background:#C2A093"></span>
+      <span style="height:1px;width:40px;background:#C2A093"></span>
+    </div>
+    <div style="font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#5B6472">Friday, December 18, 2026 &middot; Zaicha Lagoon D&rsquo;or</div>
+    <div style="font-weight:300;font-size:13px;color:#A39C90;margin-top:30px">Forever starts here. We can&rsquo;t wait to celebrate with you.</div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showCountdown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;showGifts&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;}}">
+class Component extends DCLogic {
+  state = {
+    step: 'form',
+    name: '',
+    attending: '',
+    inviteId: '',
+    error: '',
+    cd: { d:'00', h:'00', m:'00', s:'00' },
+  };
+
+  componentDidMount() {
+    try {
+      const s = JSON.parse(localStorage.getItem('vk_rsvp_v1') || 'null');
+      if (s && s.name) {
+        this.setState({
+          name: s.name, attending: s.attending, inviteId: s.inviteId,
+          step: s.attending === 'yes' ? 'ticket' : 'declined',
+        });
+      }
+    } catch (e) {}
+    this._tick();
+    this._timer = setInterval(() => this._tick(), 1000);
+  }
+
+  componentWillUnmount() { clearInterval(this._timer); }
+
+  componentDidUpdate() {
+    if (this.state.step === 'ticket') this._drawQR();
+  }
+
+  _tick() {
+    const target = new Date('2026-12-18T17:00:00').getTime();
+    let diff = Math.max(0, target - Date.now());
+    const day = Math.floor(diff / 86400000); diff -= day * 86400000;
+    const hr = Math.floor(diff / 3600000); diff -= hr * 3600000;
+    const mn = Math.floor(diff / 60000); diff -= mn * 60000;
+    const sc = Math.floor(diff / 1000);
+    const p = n => String(n).padStart(2, '0');
+    this.setState({ cd: { d: p(day), h: p(hr), m: p(mn), s: p(sc) } });
+  }
+
+  _payload() {
+    return 'VK-WEDDING|2026-12-18T17:00|' + this.state.name + '|' + this.state.inviteId;
+  }
+
+  _drawQR() {
+    if (!this._qr) return;
+    if (!window.QRious) { setTimeout(() => this.forceUpdate(), 300); return; }
+    if (this._drawnFor === this.state.inviteId) return;
+    new window.QRious({ element: this._qr, value: this._payload(), size: 220, level: 'H', background: '#ffffff', foreground: '#17181d' });
+    this._drawnFor = this.state.inviteId;
+  }
+
+  _genId() {
+    const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s = '';
+    for (let i = 0; i < 6; i++) s += a[Math.floor(Math.random() * a.length)];
+    return 'KV-' + s;
+  }
+
+  _btnStyle(active) {
+    const base = "flex:1 1 160px;padding:16px 18px;border-radius:8px;font-family:'Jost',sans-serif;font-size:14px;letter-spacing:.02em;cursor:pointer;text-align:center;transition:all .2s";
+    if (active) return base + ";border:1px solid #1B1C20;background:#1B1C20;color:#FBF8F4";
+    return base + ";border:1px solid rgba(27,28,32,.2);background:#fff;color:#1B1C20";
+  }
+
+  _download = async () => {
+    const QR = window.QRious;
+    if (!QR) return;
+    try { await document.fonts.ready; } catch (e) {}
+    const W = 1080, H = 1600, cx = W / 2;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d');
+    const rr = (X, Y, w, h, r) => { x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r); x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); };
+    const ctr = (t, y, font, color, ls) => {
+      x.fillStyle = color; x.font = font; x.textBaseline = 'alphabetic';
+      if (ls) {
+        x.textAlign = 'left';
+        let total = 0; for (const ch of t) total += x.measureText(ch).width + ls; total -= ls;
+        let sx = cx - total / 2;
+        for (const ch of t) { x.fillText(ch, sx, y); sx += x.measureText(ch).width + ls; }
+      } else { x.textAlign = 'center'; x.fillText(t, cx, y); }
+    };
+    x.fillStyle = '#FBF8F4'; x.fillRect(0, 0, W, H);
+    x.strokeStyle = '#C2A093'; x.lineWidth = 2; x.strokeRect(46, 46, W - 92, H - 92);
+    x.strokeStyle = 'rgba(194,160,147,.45)'; x.lineWidth = 1; x.strokeRect(60, 60, W - 120, H - 120);
+    ctr('WEDDING INVITATION', 150, '500 26px "Jost", sans-serif', '#5B6472', 8);
+    ctr('Viola & Kelvin', 268, '500 92px "Cormorant Garamond", serif', '#1B1C20');
+    ctr('Wrapped in Love', 330, 'italic 500 40px "Cormorant Garamond", serif', '#BE9483');
+    x.strokeStyle = '#C2A093'; x.lineWidth = 1; x.beginPath(); x.moveTo(cx - 110, 380); x.lineTo(cx + 110, 380); x.stroke();
+    ctr('FRIDAY · DECEMBER 18, 2026 · 5:00 PM', 442, '400 23px "Jost", sans-serif', '#1B1C20', 2);
+    ctr('Zaicha Lagoon D\u2019or', 502, 'italic 500 38px "Cormorant Garamond", serif', '#5B6472');
+    ctr('THIS PASS ADMITS', 612, '500 22px "Jost", sans-serif', '#5B6472', 6);
+    ctr(this.state.name, 682, '500 56px "Cormorant Garamond", serif', '#1B1C20');
+    x.setLineDash([11, 11]); x.strokeStyle = 'rgba(27,28,32,.28)'; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(78, 770); x.lineTo(W - 78, 770); x.stroke(); x.setLineDash([]);
+    x.fillStyle = '#FBF8F4'; x.beginPath(); x.arc(46, 770, 22, 0, 7); x.fill(); x.beginPath(); x.arc(W - 46, 770, 22, 0, 7); x.fill();
+    const qs = 460, qy = 856, cardW = qs + 56;
+    const qc = document.createElement('canvas');
+    new QR({ element: qc, value: this._payload(), size: qs, level: 'H', background: '#ffffff', foreground: '#17181d' });
+    x.fillStyle = '#ffffff'; x.strokeStyle = 'rgba(27,28,32,.12)'; x.lineWidth = 1;
+    rr(cx - cardW / 2, qy, cardW, cardW, 18); x.fill(); x.stroke();
+    x.drawImage(qc, cx - qs / 2, qy + 28);
+    ctr('INVITATION CODE', qy + cardW + 66, '500 22px "Jost", sans-serif', '#5B6472', 6);
+    ctr(this.state.inviteId, qy + cardW + 108, '500 34px "Jost", sans-serif', '#1B1C20', 4);
+    ctr('Please present this code at the entrance', H - 96, 'italic 400 30px "Cormorant Garamond", serif', '#8A8378');
+    const a = document.createElement('a');
+    a.download = 'VK-Wedding-Pass-' + this.state.inviteId + '.png';
+    a.href = c.toDataURL('image/png'); a.click();
+  };
+
+  renderVals() {
+    return {
+      showCountdown: this.props.showCountdown ?? true,
+      showGifts: this.props.showGifts ?? true,
+      cdDays: this.state.cd.d,
+      cdHours: this.state.cd.h,
+      cdMins: this.state.cd.m,
+      cdSecs: this.state.cd.s,
+      name: this.state.name,
+      error: this.state.error,
+      inviteId: this.state.inviteId,
+      ticketName: this.state.name,
+      isForm: this.state.step === 'form',
+      isTicket: this.state.step === 'ticket',
+      isDeclined: this.state.step === 'declined',
+      yesBtnStyle: this._btnStyle(this.state.attending === 'yes'),
+      noBtnStyle: this._btnStyle(this.state.attending === 'no'),
+      onName: (e) => this.setState({ name: e.target.value, error: '' }),
+      pickYes: () => this.setState({ attending: 'yes', error: '' }),
+      pickNo: () => this.setState({ attending: 'no', error: '' }),
+      setQr: (el) => { this._qr = el; if (el) this._drawQR(); },
+      submit: () => {
+        const nm = this.state.name.trim();
+        if (!nm) { this.setState({ error: 'Please enter your name.' }); return; }
+        if (!this.state.attending) { this.setState({ error: 'Please let us know if you can make it.' }); return; }
+        const id = this.state.inviteId || this._genId();
+        const rec = { name: nm, attending: this.state.attending, inviteId: id };
+        localStorage.setItem('vk_rsvp_v1', JSON.stringify(rec));
+        this.setState({ step: this.state.attending === 'yes' ? 'ticket' : 'declined', inviteId: id, name: nm });
+      },
+      editRsvp: () => {
+        localStorage.removeItem('vk_rsvp_v1');
+        this._drawnFor = null;
+        this.setState({ step: 'form' });
+      },
+      download: this._download,
+    };
+  }
+}
+</script>
+</body>
+</html>
