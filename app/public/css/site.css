@@ -93,7 +93,7 @@ body {
   color: var(--slate); margin: 18px 0 0;
 }
 .divider { display: flex; align-items: center; gap: 14px; margin: 30px 0 26px; }
-.divider .line { height: 1px; width: 52px; background: var(--accent-line); }
+.divider .line { height: 1px; flex: 1; background: var(--accent-line); }
 .divider .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-line); }
 .hero-when {
   font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink);
