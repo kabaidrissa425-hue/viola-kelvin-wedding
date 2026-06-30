@@ -1,7 +1,6 @@
 const path = require('node:path');
 const crypto = require('node:crypto');
 const express = require('express');
-const session = require('express-session');
 
 const db = require('./db');
 const { generateInviteCode, generatePublicToken } = require('./ids');
@@ -15,24 +14,65 @@ if (!process.env.ADMIN_PASSWORD) {
   );
 }
 
+// Admin auth uses HMAC-signed cookies so sessions survive server restarts.
+// Without a stable SESSION_SECRET the signature key changes on every restart,
+// invalidating existing cookies — set it in the environment.
+const SESSION_SECRET = process.env.SESSION_SECRET;
+if (!SESSION_SECRET) {
+  console.warn('[admin] SESSION_SECRET is not set — admin sessions will not survive server restarts. Set SESSION_SECRET in your environment.');
+}
+const _sigKey = SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+
+const ADMIN_COOKIE = 'admin_tok';
+const COOKIE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+function _signAdminToken() {
+  const msg = `admin:${Date.now()}`;
+  const sig = crypto.createHmac('sha256', _sigKey).update(msg).digest('hex');
+  return `${msg}.${sig}`;
+}
+
+function _verifyAdminToken(value) {
+  if (typeof value !== 'string') return false;
+  const dot = value.lastIndexOf('.');
+  if (dot < 0) return false;
+  const msg = value.slice(0, dot);
+  const sig = value.slice(dot + 1);
+  let expected, actual;
+  try {
+    expected = Buffer.from(crypto.createHmac('sha256', _sigKey).update(msg).digest('hex'), 'hex');
+    actual = Buffer.from(sig, 'hex');
+  } catch { return false; }
+  if (actual.length !== expected.length || !crypto.timingSafeEqual(actual, expected)) return false;
+  const m = msg.match(/^admin:(\d+)$/);
+  return m ? (Date.now() - parseInt(m[1], 10)) < COOKIE_TTL_MS : false;
+}
+
+function _getAdminCookie(req) {
+  for (const part of (req.headers.cookie || '').split(';')) {
+    const eq = part.indexOf('=');
+    if (eq >= 0 && part.slice(0, eq).trim() === ADMIN_COOKIE) {
+      return decodeURIComponent(part.slice(eq + 1).trim());
+    }
+  }
+  return null;
+}
+
+function _setAdminCookie(res) {
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  res.setHeader('Set-Cookie',
+    `${ADMIN_COOKIE}=${encodeURIComponent(_signAdminToken())}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${Math.floor(COOKIE_TTL_MS / 1000)}${secure}`);
+}
+
+function _clearAdminCookie(res) {
+  res.setHeader('Set-Cookie', `${ADMIN_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+}
+
 const app = express();
 app.use(express.json());
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 12 * 60 * 60 * 1000,
-    },
-  })
-);
 
 function requireAdmin(req, res, next) {
-  if (req.session && req.session.isAdmin) return next();
+  if (_verifyAdminToken(_getAdminCookie(req))) return next();
   res.status(401).json({ error: 'unauthorized' });
 }
 
@@ -100,16 +140,17 @@ app.post('/api/admin/login', (req, res) => {
   if (password !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'invalid_password' });
   }
-  req.session.isAdmin = true;
+  _setAdminCookie(res);
   res.json({ ok: true });
 });
 
 app.post('/api/admin/logout', (req, res) => {
-  req.session.destroy(() => res.json({ ok: true }));
+  _clearAdminCookie(res);
+  res.json({ ok: true });
 });
 
 app.get('/api/admin/session', (req, res) => {
-  res.json({ isAdmin: !!(req.session && req.session.isAdmin) });
+  res.json({ isAdmin: _verifyAdminToken(_getAdminCookie(req)) });
 });
 
 // ── Admin: guest list / export ─────────────────────────────────────────────
