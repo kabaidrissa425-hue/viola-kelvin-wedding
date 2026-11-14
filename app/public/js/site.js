@@ -73,7 +73,7 @@
   // QR encodes a real link (not the bare code) so scanning with a normal
   // phone camera opens the verify page directly instead of a web search.
   function verifyUrl(code) {
-    return `${location.origin}/verify?code=${encodeURIComponent(code)}`;
+    return `${location.origin}/verify.html?code=${encodeURIComponent(code)}`;
   }
 
   function drawTicketQr() {
