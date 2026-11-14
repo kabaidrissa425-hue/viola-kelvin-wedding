@@ -173,7 +173,7 @@
     ctr('Wrapped in Love', 330, 'italic 500 40px "Cormorant Garamond", serif', '#BE9483');
     x.strokeStyle = '#C2A093'; x.lineWidth = 1; x.beginPath(); x.moveTo(cx - 110, 380); x.lineTo(cx + 110, 380); x.stroke();
     ctr('FRIDAY · DECEMBER 18, 2026 · 5:00 PM', 442, '400 23px "Jost", sans-serif', '#1B1C20', 2);
-    ctr('Zaicha Lagoon D’or', 502, 'italic 500 38px "Cormorant Garamond", serif', '#5B6472');
+    ctr(‘Dani’s Garden → Zaicha Lagoon D’or’, 502, ‘italic 500 30px "Cormorant Garamond", serif’, ‘#5B6472’);
     ctr('THIS PASS ADMITS', 612, '500 22px "Jost", sans-serif', '#5B6472', 6);
     ctr(state.name, 682, '500 56px "Cormorant Garamond", serif', '#1B1C20');
     x.setLineDash([11, 11]); x.strokeStyle = 'rgba(27,28,32,.28)'; x.lineWidth = 2;
