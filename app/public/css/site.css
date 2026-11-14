@@ -112,11 +112,10 @@ body {
 .hero-portrait-frame { position: relative; }
 .hero-portrait {
   width: clamp(210px, 62vw, 330px); aspect-ratio: 3 / 4; border-radius: 170px 170px 14px 14px;
-  overflow: hidden; border: 1px solid rgba(27, 28, 32, .12); position: relative;
-  box-shadow: 0 40px 70px -34px rgba(27, 28, 32, .34), inset 0 0 80px 24px rgba(27, 28, 32, .28);
-  background: #2A2320;
+  overflow: hidden; border: 1px solid rgba(27, 28, 32, .12);
+  box-shadow: 0 40px 70px -34px rgba(27, 28, 32, .34); background: #EFE7DE;
 }
-.hero-portrait img { width: 100%; height: 100%; object-fit: cover; display: block; filter: sepia(.18) contrast(1.06) brightness(.96); }
+.hero-portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .est-badge {
   position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%);
   background: var(--ivory); border: 1px solid rgba(27, 28, 32, .12);
