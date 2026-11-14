@@ -133,7 +133,9 @@ app.post('/api/rsvp', (req, res) => {
   res.json({ token, name, attending, inviteCode, respondedAt });
 });
 
-// ── Public ticket verify (no auth — for venue security staff) ─────────────
+// ── Public ticket verify + staff PIN check-in (no admin login needed) ─────
+const STAFF_PIN = process.env.STAFF_PIN || '2026';
+
 app.get('/api/verify/:code', (req, res) => {
   const code = String(req.params.code || '').trim().toUpperCase();
   const guest = db.prepare('SELECT name, attending, checked_in FROM guests WHERE invite_code = ?').get(code);
@@ -141,6 +143,22 @@ app.get('/api/verify/:code', (req, res) => {
   if (guest.attending !== 'yes') return res.json({ status: 'not_attending', name: guest.name });
   if (guest.checked_in) return res.json({ status: 'already_checked_in', name: guest.name });
   res.json({ status: 'valid', name: guest.name });
+});
+
+app.post('/api/verify/checkin', (req, res) => {
+  const code = String((req.body && req.body.code) || '').trim().toUpperCase();
+  const pin  = String((req.body && req.body.pin)  || '').trim();
+  if (!code) return res.status(400).json({ status: 'not_found' });
+  if (pin !== STAFF_PIN) return res.status(401).json({ status: 'wrong_pin' });
+
+  const guest = db.prepare('SELECT * FROM guests WHERE invite_code = ?').get(code);
+  if (!guest) return res.json({ status: 'not_found' });
+  if (guest.attending !== 'yes') return res.json({ status: 'not_attending', name: guest.name });
+  if (guest.checked_in) return res.json({ status: 'already_checked_in', name: guest.name, checkedInAt: guest.checked_in_at });
+
+  const checkedInAt = nowIso();
+  db.prepare('UPDATE guests SET checked_in = 1, checked_in_at = ? WHERE invite_code = ?').run(checkedInAt, code);
+  res.json({ status: 'success', name: guest.name, checkedInAt });
 });
 
 // ── Admin auth ──────────────────────────────────────────────────────────────

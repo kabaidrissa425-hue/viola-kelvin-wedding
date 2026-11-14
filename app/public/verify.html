@@ -35,7 +35,6 @@
     min-height: 100dvh;
     padding: 24px 20px;
   }
-
   .card {
     background: var(--cream);
     border-radius: 20px;
@@ -44,7 +43,6 @@
     padding: 48px 36px 40px;
     text-align: center;
   }
-
   .event-label {
     font-size: 11px;
     font-weight: 500;
@@ -60,12 +58,7 @@
     color: var(--ink);
     margin-bottom: 32px;
   }
-
-  .status-icon {
-    font-size: 56px;
-    line-height: 1;
-    margin-bottom: 16px;
-  }
+  .status-icon { font-size: 56px; line-height: 1; margin-bottom: 16px; }
   .guest-name {
     font-family: 'Cormorant Garamond', serif;
     font-size: 38px;
@@ -89,36 +82,99 @@
   .status-label.warn    { background: var(--amber-bg); color: var(--amber); }
 
   .divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 28px 0;
-    color: var(--blush);
+    display: flex; align-items: center; gap: 10px;
+    margin: 28px 0; color: var(--blush);
   }
   .divider .line { flex: 1; height: 1px; background: var(--blush); opacity: .4; }
   .divider .dot  { width: 5px; height: 5px; border-radius: 50%; background: var(--blush); flex-shrink: 0; }
 
   .code-label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--slate);
-    margin-bottom: 4px;
+    font-size: 10px; font-weight: 500; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--slate); margin-bottom: 4px;
   }
   .code-value {
-    font-family: 'Jost', monospace;
-    font-size: 15px;
-    font-weight: 400;
-    color: var(--slate);
-    letter-spacing: .12em;
+    font-size: 15px; color: var(--slate); letter-spacing: .12em; margin-bottom: 28px;
   }
 
-  .loading {
-    color: var(--slate);
-    font-size: 15px;
-    padding: 20px 0;
+  .btn-confirm {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 100px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
   }
+  .btn-confirm:disabled { opacity: .5; cursor: default; }
+
+  /* PIN overlay */
+  .pin-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(23,24,29,.85);
+    align-items: center; justify-content: center;
+    padding: 24px;
+    z-index: 10;
+  }
+  .pin-overlay.is-open { display: flex; }
+  .pin-card {
+    background: var(--cream);
+    border-radius: 20px;
+    padding: 40px 32px;
+    width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  .pin-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px; font-weight: 600;
+    color: var(--ink); margin-bottom: 6px;
+  }
+  .pin-sub {
+    font-size: 13px; color: var(--slate); margin-bottom: 24px;
+  }
+  .pin-input {
+    width: 100%;
+    border: 1.5px solid #D4C8BE;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'Jost', sans-serif;
+    font-size: 22px;
+    letter-spacing: .3em;
+    text-align: center;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+    margin-bottom: 8px;
+  }
+  .pin-input:focus { border-color: var(--blush); }
+  .pin-error {
+    font-size: 12px; color: var(--red);
+    min-height: 18px; margin-bottom: 12px;
+  }
+  .btn-pin-submit {
+    display: block; width: 100%;
+    background: var(--ink); color: var(--cream);
+    border: none; border-radius: 100px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px; font-weight: 500;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: 14px; cursor: pointer; margin-bottom: 10px;
+  }
+  .btn-pin-submit:disabled { opacity: .5; cursor: default; }
+  .btn-pin-cancel {
+    background: none; border: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px; color: var(--slate);
+    cursor: pointer; padding: 6px;
+  }
+  .loading { color: var(--slate); font-size: 15px; padding: 20px 0; }
 </style>
 </head>
 <body>
@@ -134,6 +190,19 @@
     <div class="divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
     <div class="code-label">Invitation Code</div>
     <div class="code-value" id="codeDisplay"></div>
+    <button class="btn-confirm" id="confirmBtn" style="display:none">Confirm Check-In</button>
+  </div>
+</div>
+
+<!-- PIN overlay -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-card">
+    <div class="pin-title">Staff PIN</div>
+    <div class="pin-sub">Enter your staff code to confirm check-in</div>
+    <input type="password" inputmode="numeric" maxlength="10" class="pin-input" id="pinInput" placeholder="••••">
+    <div class="pin-error" id="pinError"></div>
+    <button class="btn-pin-submit" id="pinSubmit">Confirm Check-In</button>
+    <button class="btn-pin-cancel" id="pinCancel">Cancel</button>
   </div>
 </div>
 
@@ -142,35 +211,78 @@
   const code = new URLSearchParams(location.search).get('code') || '';
   const $ = id => document.getElementById(id);
 
-  function show(icon, name, labelText, labelClass, codeVal) {
+  function show(icon, name, labelText, labelClass, codeVal, showConfirm) {
     $('loading').style.display = 'none';
     $('icon').textContent = icon;
     $('guestName').textContent = name || '';
     $('statusLabel').textContent = labelText;
     $('statusLabel').className = 'status-label ' + labelClass;
     $('codeDisplay').textContent = codeVal || code;
+    $('confirmBtn').style.display = showConfirm ? 'block' : 'none';
     $('result').style.display = 'block';
   }
 
-  if (!code) {
-    show('❌', '', 'No ticket code found', 'error', '—');
-    return;
-  }
+  if (!code) { show('❌', '', 'No ticket code found', 'error', '—', false); return; }
 
   fetch('/api/verify/' + encodeURIComponent(code))
     .then(r => r.json())
     .then(data => {
       if (data.status === 'valid') {
-        show('✅', data.name, 'Valid — Welcome!', 'valid', code);
+        show('✅', data.name, 'Valid — Welcome!', 'valid', code, true);
       } else if (data.status === 'already_checked_in') {
-        show('⚠️', data.name, 'Already Checked In', 'warn', code);
+        show('⚠️', data.name, 'Already Checked In', 'warn', code, false);
       } else if (data.status === 'not_attending') {
-        show('⚠️', data.name, 'Not Marked as Attending', 'warn', code);
+        show('⚠️', data.name, 'Not Marked as Attending', 'warn', code, false);
       } else {
-        show('❌', '', 'Code Not Recognized', 'error', code);
+        show('❌', '', 'Code Not Recognized', 'error', code, false);
       }
     })
-    .catch(() => show('❌', '', 'Connection Error — Try Again', 'error', code));
+    .catch(() => show('❌', '', 'Connection Error — Try Again', 'error', code, false));
+
+  $('confirmBtn').addEventListener('click', () => {
+    $('pinInput').value = '';
+    $('pinError').textContent = '';
+    $('pinOverlay').classList.add('is-open');
+    setTimeout(() => $('pinInput').focus(), 50);
+  });
+
+  $('pinCancel').addEventListener('click', () => {
+    $('pinOverlay').classList.remove('is-open');
+  });
+
+  async function submitPin() {
+    const pin = $('pinInput').value.trim();
+    if (!pin) { $('pinError').textContent = 'Please enter your staff PIN.'; return; }
+    $('pinSubmit').disabled = true;
+    $('pinError').textContent = '';
+    try {
+      const res = await fetch('/api/verify/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, pin }),
+      });
+      const data = await res.json();
+      $('pinOverlay').classList.remove('is-open');
+      if (data.status === 'success') {
+        show('✅', data.name, 'Checked In ✓', 'valid', code, false);
+      } else if (data.status === 'wrong_pin') {
+        $('pinOverlay').classList.add('is-open');
+        $('pinError').textContent = 'Incorrect PIN — try again.';
+      } else if (data.status === 'already_checked_in') {
+        show('⚠️', data.name, 'Already Checked In', 'warn', code, false);
+      } else {
+        show('❌', '', 'Something went wrong', 'error', code, false);
+      }
+    } catch (e) {
+      $('pinOverlay').classList.remove('is-open');
+      show('❌', '', 'Connection Error — Try Again', 'error', code, false);
+    } finally {
+      $('pinSubmit').disabled = false;
+    }
+  }
+
+  $('pinSubmit').addEventListener('click', submitPin);
+  $('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') submitPin(); });
 })();
 </script>
 </body>
