@@ -133,6 +133,16 @@ app.post('/api/rsvp', (req, res) => {
   res.json({ token, name, attending, inviteCode, respondedAt });
 });
 
+// ── Public ticket verify (no auth — for venue security staff) ─────────────
+app.get('/api/verify/:code', (req, res) => {
+  const code = String(req.params.code || '').trim().toUpperCase();
+  const guest = db.prepare('SELECT name, attending, checked_in FROM guests WHERE invite_code = ?').get(code);
+  if (!guest) return res.json({ status: 'not_found' });
+  if (guest.attending !== 'yes') return res.json({ status: 'not_attending', name: guest.name });
+  if (guest.checked_in) return res.json({ status: 'already_checked_in', name: guest.name });
+  res.json({ status: 'valid', name: guest.name });
+});
+
 // ── Admin auth ──────────────────────────────────────────────────────────────
 
 app.post('/api/admin/login', (req, res) => {

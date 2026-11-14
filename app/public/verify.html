@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticket Verify — Viola &amp; Kelvin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FBF8F4;
+    --ink: #17181D;
+    --slate: #5B6472;
+    --blush: #BE9483;
+    --green: #2D6A4F;
+    --green-bg: #D8F3DC;
+    --red: #9B2226;
+    --red-bg: #FFE0E0;
+    --amber: #7B4F2E;
+    --amber-bg: #FFF3CD;
+  }
+  html, body {
+    height: 100%;
+    background: var(--ink);
+    font-family: 'Jost', sans-serif;
+    color: var(--ink);
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 24px 20px;
+  }
+
+  .card {
+    background: var(--cream);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 420px;
+    padding: 48px 36px 40px;
+    text-align: center;
+  }
+
+  .event-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 6px;
+  }
+  .event-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 32px;
+  }
+
+  .status-icon {
+    font-size: 56px;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .guest-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  .status-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 100px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+  .status-label.valid   { background: var(--green-bg); color: var(--green); }
+  .status-label.error   { background: var(--red-bg);   color: var(--red); }
+  .status-label.warn    { background: var(--amber-bg); color: var(--amber); }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 28px 0;
+    color: var(--blush);
+  }
+  .divider .line { flex: 1; height: 1px; background: var(--blush); opacity: .4; }
+  .divider .dot  { width: 5px; height: 5px; border-radius: 50%; background: var(--blush); flex-shrink: 0; }
+
+  .code-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 4px;
+  }
+  .code-value {
+    font-family: 'Jost', monospace;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--slate);
+    letter-spacing: .12em;
+  }
+
+  .loading {
+    color: var(--slate);
+    font-size: 15px;
+    padding: 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="event-label">Viola &amp; Kelvin · Dec 18, 2026</div>
+  <div class="event-name">Guest Verification</div>
+  <div class="loading" id="loading">Looking up ticket&hellip;</div>
+  <div id="result" style="display:none">
+    <div class="status-icon" id="icon"></div>
+    <div class="guest-name" id="guestName"></div>
+    <span class="status-label" id="statusLabel"></span>
+    <div class="divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+    <div class="code-label">Invitation Code</div>
+    <div class="code-value" id="codeDisplay"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const code = new URLSearchParams(location.search).get('code') || '';
+  const $ = id => document.getElementById(id);
+
+  function show(icon, name, labelText, labelClass, codeVal) {
+    $('loading').style.display = 'none';
+    $('icon').textContent = icon;
+    $('guestName').textContent = name || '';
+    $('statusLabel').textContent = labelText;
+    $('statusLabel').className = 'status-label ' + labelClass;
+    $('codeDisplay').textContent = codeVal || code;
+    $('result').style.display = 'block';
+  }
+
+  if (!code) {
+    show('❌', '', 'No ticket code found', 'error', '—');
+    return;
+  }
+
+  fetch('/api/verify/' + encodeURIComponent(code))
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'valid') {
+        show('✅', data.name, 'Valid — Welcome!', 'valid', code);
+      } else if (data.status === 'already_checked_in') {
+        show('⚠️', data.name, 'Already Checked In', 'warn', code);
+      } else if (data.status === 'not_attending') {
+        show('⚠️', data.name, 'Not Marked as Attending', 'warn', code);
+      } else {
+        show('❌', '', 'Code Not Recognized', 'error', code);
+      }
+    })
+    .catch(() => show('❌', '', 'Connection Error — Try Again', 'error', code));
+})();
+</script>
+</body>
+</html>
