@@ -174,6 +174,15 @@ table.guest-table tr:last-child td { border-bottom: none; }
 }
 .btn-undo-checkin:hover { background: rgba(169,84,74,.15); }
 .btn-undo-checkin:disabled { opacity: .5; cursor: default; }
+.btn-delete-guest {
+  font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); background: transparent;
+  border: 1px solid var(--border-strong); border-radius: 100px;
+  padding: 4px 14px; cursor: pointer; white-space: nowrap; margin-left: 4px;
+}
+.btn-delete-guest:hover { color: var(--error); border-color: rgba(169,84,74,.4); }
+.btn-delete-guest:disabled { opacity: .5; cursor: default; }
 .scan-result {
   border-radius: 14px; padding: 26px 20px; min-height: 110px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;

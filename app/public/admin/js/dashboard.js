@@ -49,13 +49,15 @@
   }
 
   function actionCell(g) {
-    if (!g.inviteCode) return '<td></td>';
     const btns = [];
-    if (g.ceremonyCheckedIn) {
+    if (g.inviteCode && g.ceremonyCheckedIn) {
       btns.push(`<button class="btn-undo-checkin" data-code="${escapeHtml(g.inviteCode)}" data-venue="ceremony">Undo Ceremony</button>`);
     }
-    if (g.receptionCheckedIn) {
+    if (g.inviteCode && g.receptionCheckedIn) {
       btns.push(`<button class="btn-undo-checkin" data-code="${escapeHtml(g.inviteCode)}" data-venue="reception">Undo Reception</button>`);
+    }
+    if (g.token) {
+      btns.push(`<button class="btn-delete-guest" data-token="${escapeHtml(g.token)}">Delete</button>`);
     }
     return btns.length ? `<td style="white-space:nowrap;vertical-align:middle">${btns.join(' ')}</td>` : '<td></td>';
   }
@@ -100,6 +102,19 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code: btn.dataset.code, venue }),
+        });
+        if (res.status === 401) { location.href = './login.html?next=./dashboard.html'; return; }
+        await load();
+      });
+    });
+
+    els.tableBody.querySelectorAll('.btn-delete-guest').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const name = btn.closest('tr').querySelector('td').textContent;
+        if (!confirm(`Permanently delete "${name}" from the guest list? This cannot be undone.`)) return;
+        btn.disabled = true;
+        const res = await fetch('/api/admin/guests/' + encodeURIComponent(btn.dataset.token), {
+          method: 'DELETE',
         });
         if (res.status === 401) { location.href = './login.html?next=./dashboard.html'; return; }
         await load();
