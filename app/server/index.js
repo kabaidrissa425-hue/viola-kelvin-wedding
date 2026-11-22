@@ -270,6 +270,15 @@ app.post('/api/checkin', requireAdmin, (req, res) => {
   res.json({ status: 'success', name: guest.name, checkedInAt });
 });
 
+app.post('/api/admin/uncheckin', requireAdmin, (req, res) => {
+  const code = String((req.body && req.body.code) || '').trim().toUpperCase();
+  if (!code) return res.status(400).json({ status: 'not_found' });
+  const guest = db.prepare('SELECT * FROM guests WHERE invite_code = ?').get(code);
+  if (!guest) return res.json({ status: 'not_found' });
+  db.prepare('UPDATE guests SET checked_in = 0, checked_in_at = NULL WHERE invite_code = ?').run(code);
+  res.json({ status: 'success', name: guest.name });
+});
+
 // ── Static frontend ─────────────────────────────────────────────────────────
 
 app.use(express.static(path.join(__dirname, '..', 'public')));

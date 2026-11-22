@@ -38,6 +38,11 @@
     return checkedIn ? '<span class="badge badge-checked">Checked In</span>' : '—';
   }
 
+  function actionCell(g) {
+    if (!g.checkedIn || !g.inviteCode) return '<td></td>';
+    return `<td><button class="btn-undo-checkin" data-code="${escapeHtml(g.inviteCode)}">Undo</button></td>`;
+  }
+
   function applyAndRender() {
     let rows = guests;
     if (filter === 'yes' || filter === 'no') {
@@ -62,9 +67,24 @@
           <td>${g.inviteCode ? escapeHtml(g.inviteCode) : '—'}</td>
           <td>${fmtDate(g.respondedAt)}</td>
           <td>${checkinBadge(g.checkedIn)}</td>
+          ${actionCell(g)}
         </tr>`
       )
       .join('');
+
+    els.tableBody.querySelectorAll('.btn-undo-checkin').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm(`Undo check-in for ${btn.closest('tr').querySelector('td').textContent}?`)) return;
+        btn.disabled = true;
+        const res = await fetch('/api/admin/uncheckin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: btn.dataset.code }),
+        });
+        if (res.status === 401) { location.href = './login.html?next=./dashboard.html'; return; }
+        await load();
+      });
+    });
   }
 
   async function load() {
