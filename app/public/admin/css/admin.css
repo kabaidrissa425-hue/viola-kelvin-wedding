@@ -106,7 +106,7 @@ a { color: inherit; }
 .dash-export:hover { border-color: var(--ink); }
 
 .stat-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 30px;
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 30px;
 }
 .stat-card {
   background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; text-align: center;
@@ -198,6 +198,9 @@ table.guest-table tr:last-child td { border-bottom: none; }
 .btn-confirm-checkin:hover { background: var(--ink-soft); }
 .btn-confirm-checkin:disabled { opacity: .6; cursor: default; }
 
+@media (max-width: 900px) {
+  .stat-grid { grid-template-columns: repeat(3, 1fr); }
+}
 @media (max-width: 760px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   table.guest-table { font-size: 13px; }

@@ -24,4 +24,13 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_guests_invite_code ON guests(invite_code);
 `);
 
+// Migration: per-venue check-in columns (safe on existing DBs — ignored if already present)
+const addCol = (sql) => { try { db.exec(sql); } catch (_) {} };
+addCol('ALTER TABLE guests ADD COLUMN ceremony_checked_in INTEGER NOT NULL DEFAULT 0');
+addCol('ALTER TABLE guests ADD COLUMN ceremony_checked_in_at TEXT');
+addCol('ALTER TABLE guests ADD COLUMN reception_checked_in INTEGER NOT NULL DEFAULT 0');
+addCol('ALTER TABLE guests ADD COLUMN reception_checked_in_at TEXT');
+// Carry any legacy single check-in into the ceremony slot
+db.exec('UPDATE guests SET ceremony_checked_in = 1, ceremony_checked_in_at = checked_in_at WHERE checked_in = 1 AND ceremony_checked_in = 0');
+
 module.exports = db;

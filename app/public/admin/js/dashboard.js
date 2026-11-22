@@ -6,7 +6,8 @@
     statAttending: document.getElementById('statAttending'),
     statDeclined: document.getElementById('statDeclined'),
     statNoResponse: document.getElementById('statNoResponse'),
-    statCheckedIn: document.getElementById('statCheckedIn'),
+    statCeremony: document.getElementById('statCeremony'),
+    statReception: document.getElementById('statReception'),
     guestSearch: document.getElementById('guestSearch'),
     tableBody: document.getElementById('guestTableBody'),
     logoutBtn: document.getElementById('logoutBtn'),
@@ -28,19 +29,35 @@
       ' ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   }
 
+  function fmtTime(iso) {
+    if (!iso) return '';
+    try {
+      return new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    } catch (_) { return ''; }
+  }
+
   function rsvpBadge(attending) {
     if (attending === 'yes') return '<span class="badge badge-yes">Attending</span>';
     if (attending === 'no') return '<span class="badge badge-no">Declined</span>';
     return '<span class="badge badge-pending">No Response</span>';
   }
 
-  function checkinBadge(checkedIn) {
-    return checkedIn ? '<span class="badge badge-checked">Checked In</span>' : '—';
+  function venueBadge(checkedIn, checkedInAt) {
+    if (!checkedIn) return '—';
+    const t = fmtTime(checkedInAt);
+    return `<span class="badge badge-checked">✓${t ? ' · ' + t : ''}</span>`;
   }
 
   function actionCell(g) {
-    if (!g.checkedIn || !g.inviteCode) return '<td></td>';
-    return `<td><button class="btn-undo-checkin" data-code="${escapeHtml(g.inviteCode)}">Undo</button></td>`;
+    if (!g.inviteCode) return '<td></td>';
+    const btns = [];
+    if (g.ceremonyCheckedIn) {
+      btns.push(`<button class="btn-undo-checkin" data-code="${escapeHtml(g.inviteCode)}" data-venue="ceremony">Undo Ceremony</button>`);
+    }
+    if (g.receptionCheckedIn) {
+      btns.push(`<button class="btn-undo-checkin" data-code="${escapeHtml(g.inviteCode)}" data-venue="reception">Undo Reception</button>`);
+    }
+    return btns.length ? `<td style="white-space:nowrap;vertical-align:middle">${btns.join(' ')}</td>` : '<td></td>';
   }
 
   function applyAndRender() {
@@ -50,13 +67,13 @@
     } else if (filter === 'pending') {
       rows = rows.filter((g) => !g.attending);
     } else if (filter === 'checked') {
-      rows = rows.filter((g) => g.checkedIn);
+      rows = rows.filter((g) => g.ceremonyCheckedIn || g.receptionCheckedIn);
     }
     if (query) {
       rows = rows.filter((g) => g.name.toLowerCase().includes(query));
     }
     if (!rows.length) {
-      els.tableBody.innerHTML = '<tr><td colspan="5" class="empty-row">No guests match.</td></tr>';
+      els.tableBody.innerHTML = '<tr><td colspan="7" class="empty-row">No guests match.</td></tr>';
       return;
     }
     els.tableBody.innerHTML = rows
@@ -66,7 +83,8 @@
           <td>${rsvpBadge(g.attending)}</td>
           <td>${g.inviteCode ? escapeHtml(g.inviteCode) : '—'}</td>
           <td>${fmtDate(g.respondedAt)}</td>
-          <td>${checkinBadge(g.checkedIn)}</td>
+          <td>${venueBadge(g.ceremonyCheckedIn, g.ceremonyCheckedInAt)}</td>
+          <td>${venueBadge(g.receptionCheckedIn, g.receptionCheckedInAt)}</td>
           ${actionCell(g)}
         </tr>`
       )
@@ -74,12 +92,14 @@
 
     els.tableBody.querySelectorAll('.btn-undo-checkin').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        if (!confirm(`Undo check-in for ${btn.closest('tr').querySelector('td').textContent}?`)) return;
+        const venue = btn.dataset.venue;
+        const name = btn.closest('tr').querySelector('td').textContent;
+        if (!confirm(`Undo ${venue} check-in for ${name}?`)) return;
         btn.disabled = true;
         const res = await fetch('/api/admin/uncheckin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: btn.dataset.code }),
+          body: JSON.stringify({ code: btn.dataset.code, venue }),
         });
         if (res.status === 401) { location.href = './login.html?next=./dashboard.html'; return; }
         await load();
@@ -96,7 +116,8 @@
     els.statAttending.textContent = data.counts.attending;
     els.statDeclined.textContent = data.counts.declined;
     els.statNoResponse.textContent = data.counts.noResponse;
-    els.statCheckedIn.textContent = data.counts.checkedIn;
+    els.statCeremony.textContent = data.counts.ceremonyCheckedIn;
+    els.statReception.textContent = data.counts.receptionCheckedIn;
     applyAndRender();
   }
 

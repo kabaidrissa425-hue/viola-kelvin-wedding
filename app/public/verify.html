@@ -22,7 +22,7 @@
     --amber-bg: #FFF3CD;
   }
   html, body {
-    height: 100%;
+    min-height: 100%;
     background: var(--ink);
     font-family: 'Jost', sans-serif;
     color: var(--ink);
@@ -31,59 +31,144 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 100dvh;
-    padding: 24px 20px;
+    padding: 28px 20px 40px;
+    gap: 16px;
   }
+
+  /* Venue selector bar */
+  .venue-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+  }
+  .venue-bar-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.4);
+  }
+  .venue-toggle {
+    display: flex;
+    background: rgba(255,255,255,.1);
+    border-radius: 100px;
+    padding: 3px;
+    gap: 2px;
+    width: 100%;
+    max-width: 300px;
+  }
+  .vtoggle {
+    flex: 1;
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 100px;
+    padding: 10px 16px;
+    cursor: pointer;
+    color: rgba(255,255,255,.55);
+    background: transparent;
+    transition: background .2s, color .2s;
+  }
+  .vtoggle.is-active {
+    background: var(--cream);
+    color: var(--ink);
+  }
+
+  /* Card */
   .card {
     background: var(--cream);
     border-radius: 20px;
     width: 100%;
     max-width: 420px;
-    padding: 48px 36px 40px;
+    padding: 40px 32px 36px;
     text-align: center;
   }
   .event-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     letter-spacing: .18em;
     text-transform: uppercase;
     color: var(--slate);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
-  .event-name {
+  .scanner-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 600;
     color: var(--ink);
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
-  .status-icon { font-size: 56px; line-height: 1; margin-bottom: 16px; }
+
+  /* Status */
+  .status-icon { font-size: 52px; line-height: 1; margin-bottom: 14px; }
   .guest-name {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 38px;
+    font-size: 36px;
     font-weight: 600;
     color: var(--ink);
     margin-bottom: 10px;
     line-height: 1.15;
   }
   .status-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     letter-spacing: .08em;
     text-transform: uppercase;
     padding: 6px 18px;
     border-radius: 100px;
     display: inline-block;
-    margin-top: 4px;
   }
   .status-label.valid   { background: var(--green-bg); color: var(--green); }
   .status-label.error   { background: var(--red-bg);   color: var(--red); }
   .status-label.warn    { background: var(--amber-bg); color: var(--amber); }
 
+  /* Venue rows */
+  .venue-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 22px 0 0;
+  }
+  .venue-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 14px;
+    border-radius: 10px;
+    background: rgba(0,0,0,.04);
+    border: 1.5px solid transparent;
+    transition: border-color .2s, background .2s;
+  }
+  .venue-row.is-current {
+    border-color: var(--blush);
+    background: rgba(190,148,131,.08);
+  }
+  .venue-row-name {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .venue-row-status {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .venue-row-status.checked { color: var(--green); }
+  .venue-row-status.pending { color: var(--slate); }
+
+  /* Divider */
   .divider {
     display: flex; align-items: center; gap: 10px;
-    margin: 28px 0; color: var(--blush);
+    margin: 24px 0 20px; color: var(--blush);
   }
   .divider .line { flex: 1; height: 1px; background: var(--blush); opacity: .4; }
   .divider .dot  { width: 5px; height: 5px; border-radius: 50%; background: var(--blush); flex-shrink: 0; }
@@ -93,11 +178,11 @@
     text-transform: uppercase; color: var(--slate); margin-bottom: 4px;
   }
   .code-value {
-    font-size: 15px; color: var(--slate); letter-spacing: .12em; margin-bottom: 28px;
+    font-size: 15px; color: var(--slate); letter-spacing: .12em; margin-bottom: 24px;
   }
 
   .btn-confirm {
-    display: inline-block;
+    display: block;
     background: var(--ink);
     color: var(--cream);
     border: none;
@@ -107,18 +192,20 @@
     font-weight: 500;
     letter-spacing: .1em;
     text-transform: uppercase;
-    padding: 14px 32px;
+    padding: 15px 32px;
     cursor: pointer;
     width: 100%;
-    margin-top: 8px;
   }
   .btn-confirm:disabled { opacity: .5; cursor: default; }
+
+  .loading { color: var(--slate); font-size: 15px; padding: 20px 0; }
+  .ready-idle { color: var(--slate); font-size: 14px; padding: 24px 0; line-height: 1.6; }
 
   /* PIN overlay */
   .pin-overlay {
     display: none;
     position: fixed; inset: 0;
-    background: rgba(23,24,29,.85);
+    background: rgba(23,24,29,.88);
     align-items: center; justify-content: center;
     padding: 24px;
     z-index: 10;
@@ -136,9 +223,7 @@
     font-size: 26px; font-weight: 600;
     color: var(--ink); margin-bottom: 6px;
   }
-  .pin-sub {
-    font-size: 13px; color: var(--slate); margin-bottom: 24px;
-  }
+  .pin-sub { font-size: 13px; color: var(--slate); margin-bottom: 24px; }
   .pin-input {
     width: 100%;
     border: 1.5px solid #D4C8BE;
@@ -154,10 +239,7 @@
     margin-bottom: 8px;
   }
   .pin-input:focus { border-color: var(--blush); }
-  .pin-error {
-    font-size: 12px; color: var(--red);
-    min-height: 18px; margin-bottom: 12px;
-  }
+  .pin-error { font-size: 12px; color: var(--red); min-height: 18px; margin-bottom: 12px; }
   .btn-pin-submit {
     display: block; width: 100%;
     background: var(--ink); color: var(--cream);
@@ -174,19 +256,45 @@
     font-size: 13px; color: var(--slate);
     cursor: pointer; padding: 6px;
   }
-  .loading { color: var(--slate); font-size: 15px; padding: 20px 0; }
 </style>
 </head>
 <body>
 
-<div class="card" id="card">
-  <div class="event-label">Viola &amp; Kelvin · Dec 18, 2026</div>
-  <div class="event-name">Guest Verification</div>
-  <div class="loading" id="loading">Looking up ticket&hellip;</div>
+<!-- Venue selector — set once per device, persists in localStorage -->
+<div class="venue-bar">
+  <div class="venue-bar-label">Scanner venue</div>
+  <div class="venue-toggle">
+    <button class="vtoggle" id="vCeremony" data-venue="ceremony">Ceremony</button>
+    <button class="vtoggle" id="vReception" data-venue="reception">Reception</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="event-label">Viola &amp; Kelvin &middot; Dec 18, 2026</div>
+  <div class="scanner-title" id="scannerTitle">Guest Verification</div>
+
+  <div class="loading" id="loading" style="display:none">Looking up ticket&hellip;</div>
+
+  <div class="ready-idle" id="idleMsg">
+    Scan a guest QR code<br>to verify their invitation.
+  </div>
+
   <div id="result" style="display:none">
     <div class="status-icon" id="icon"></div>
     <div class="guest-name" id="guestName"></div>
     <span class="status-label" id="statusLabel"></span>
+
+    <div class="venue-rows" id="venueRows" style="display:none">
+      <div class="venue-row" id="rowCeremony">
+        <span class="venue-row-name">Ceremony</span>
+        <span class="venue-row-status" id="statusCeremony">—</span>
+      </div>
+      <div class="venue-row" id="rowReception">
+        <span class="venue-row-name">Reception</span>
+        <span class="venue-row-status" id="statusReception">—</span>
+      </div>
+    </div>
+
     <div class="divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
     <div class="code-label">Invitation Code</div>
     <div class="code-value" id="codeDisplay"></div>
@@ -198,57 +306,134 @@
 <div class="pin-overlay" id="pinOverlay">
   <div class="pin-card">
     <div class="pin-title">Staff PIN</div>
-    <div class="pin-sub">Enter your staff code to confirm check-in</div>
+    <div class="pin-sub" id="pinSub">Enter your staff code to confirm check-in</div>
     <input type="password" inputmode="numeric" maxlength="10" class="pin-input" id="pinInput" placeholder="••••">
     <div class="pin-error" id="pinError"></div>
-    <button class="btn-pin-submit" id="pinSubmit">Confirm Check-In</button>
+    <button class="btn-pin-submit" id="pinSubmit">Confirm</button>
     <button class="btn-pin-cancel" id="pinCancel">Cancel</button>
   </div>
 </div>
 
 <script>
 (function () {
-  const code = new URLSearchParams(location.search).get('code') || '';
-  const $ = id => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const code   = (params.get('code') || '').trim().toUpperCase();
+  const $      = id => document.getElementById(id);
 
-  function show(icon, name, labelText, labelClass, codeVal, showConfirm) {
-    $('loading').style.display = 'none';
-    $('icon').textContent = icon;
-    $('guestName').textContent = name || '';
-    $('statusLabel').textContent = labelText;
-    $('statusLabel').className = 'status-label ' + labelClass;
-    $('codeDisplay').textContent = codeVal || code;
-    $('confirmBtn').style.display = showConfirm ? 'block' : 'none';
-    $('result').style.display = 'block';
+  // ── Venue state ──────────────────────────────────────────────────────────
+  let currentVenue = 'ceremony';
+  try { currentVenue = localStorage.getItem('vk_venue') || 'ceremony'; } catch (_) {}
+  if (currentVenue !== 'ceremony' && currentVenue !== 'reception') currentVenue = 'ceremony';
+
+  let guestData = null; // cached API response
+
+  function setVenue(v) {
+    currentVenue = v;
+    try { localStorage.setItem('vk_venue', v); } catch (_) {}
+    $('vCeremony').classList.toggle('is-active', v === 'ceremony');
+    $('vReception').classList.toggle('is-active', v === 'reception');
+    $('scannerTitle').textContent = v === 'ceremony' ? 'Ceremony Scanner' : 'Reception Scanner';
+    if (guestData) renderGuest(guestData, code);
   }
 
-  if (!code) { show('❌', '', 'No ticket code found', 'error', '—', false); return; }
+  $('vCeremony').addEventListener('click', () => setVenue('ceremony'));
+  $('vReception').addEventListener('click', () => setVenue('reception'));
 
-  fetch('/api/verify/' + encodeURIComponent(code))
-    .then(r => r.json())
-    .then(data => {
-      if (data.status === 'valid') {
-        show('✅', data.name, 'Valid — Welcome!', 'valid', code, true);
-      } else if (data.status === 'already_checked_in') {
-        show('⚠️', data.name, 'Already Checked In', 'warn', code, false);
-      } else if (data.status === 'not_attending') {
-        show('⚠️', data.name, 'Not Marked as Attending', 'warn', code, false);
-      } else {
-        show('❌', '', 'Code Not Recognized', 'error', code, false);
-      }
-    })
-    .catch(() => show('❌', '', 'Connection Error — Try Again', 'error', code, false));
+  // Init toggle UI
+  setVenue(currentVenue);
 
+  // ── Guest rendering ──────────────────────────────────────────────────────
+  function fmtTime(iso) {
+    if (!iso) return '';
+    try {
+      return new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    } catch (_) { return ''; }
+  }
+
+  function updateVenueRow(rowId, statusId, venueObj, venueKey) {
+    const isCurrent = venueKey === currentVenue;
+    $(rowId).classList.toggle('is-current', isCurrent);
+    const st = $(statusId);
+    if (venueObj && venueObj.checkedIn) {
+      const t = fmtTime(venueObj.checkedInAt);
+      st.textContent = t ? '✓ Checked in · ' + t : '✓ Checked in';
+      st.className = 'venue-row-status checked';
+    } else {
+      st.textContent = '— Not yet';
+      st.className = 'venue-row-status pending';
+    }
+  }
+
+  function renderGuest(data, codeVal) {
+    guestData = data;
+    $('loading').style.display = 'none';
+    $('idleMsg').style.display = 'none';
+    $('result').style.display = 'block';
+    $('codeDisplay').textContent = codeVal || code;
+    $('confirmBtn').style.display = 'none';
+
+    if (data.status === 'not_found') {
+      $('icon').textContent = '❌';
+      $('guestName').textContent = '';
+      $('statusLabel').textContent = 'Code Not Recognized';
+      $('statusLabel').className = 'status-label error';
+      $('venueRows').style.display = 'none';
+      return;
+    }
+    if (data.status === 'not_attending') {
+      $('icon').textContent = '⚠️';
+      $('guestName').textContent = data.name || '';
+      $('statusLabel').textContent = 'Not Marked as Attending';
+      $('statusLabel').className = 'status-label warn';
+      $('venueRows').style.display = 'none';
+      return;
+    }
+
+    // Valid guest — show per-venue status
+    $('guestName').textContent = data.name || '';
+    $('venueRows').style.display = 'flex';
+    updateVenueRow('rowCeremony', 'statusCeremony', data.ceremony, 'ceremony');
+    updateVenueRow('rowReception', 'statusReception', data.reception, 'reception');
+
+    const venueData = currentVenue === 'ceremony' ? data.ceremony : data.reception;
+    const venueName = currentVenue === 'ceremony' ? 'Ceremony' : 'Reception';
+
+    if (venueData && venueData.checkedIn) {
+      $('icon').textContent = '⚠️';
+      $('statusLabel').textContent = 'Already Admitted — ' + venueName;
+      $('statusLabel').className = 'status-label warn';
+    } else {
+      $('icon').textContent = '✅';
+      $('statusLabel').textContent = 'Approved — ' + venueName + ' Entry';
+      $('statusLabel').className = 'status-label valid';
+      $('confirmBtn').style.display = 'block';
+      $('confirmBtn').textContent = 'Confirm ' + venueName + ' Check‑In';
+    }
+  }
+
+  // ── Fetch guest ──────────────────────────────────────────────────────────
+  if (!code) {
+    // No code — just show idle scanner
+  } else {
+    $('idleMsg').style.display = 'none';
+    $('loading').style.display = 'block';
+    fetch('/api/verify/' + encodeURIComponent(code))
+      .then(r => r.json())
+      .then(data => renderGuest(data, code))
+      .catch(() => renderGuest({ status: 'not_found' }, code));
+  }
+
+  // ── Check-in flow ────────────────────────────────────────────────────────
   $('confirmBtn').addEventListener('click', () => {
+    const venueName = currentVenue === 'ceremony' ? 'Ceremony' : 'Reception';
+    $('pinSub').textContent = 'Enter staff PIN to confirm ' + venueName + ' check-in';
     $('pinInput').value = '';
     $('pinError').textContent = '';
     $('pinOverlay').classList.add('is-open');
     setTimeout(() => $('pinInput').focus(), 50);
   });
 
-  $('pinCancel').addEventListener('click', () => {
-    $('pinOverlay').classList.remove('is-open');
-  });
+  $('pinCancel').addEventListener('click', () => $('pinOverlay').classList.remove('is-open'));
 
   async function submitPin() {
     const pin = $('pinInput').value.trim();
@@ -259,23 +444,36 @@
       const res = await fetch('/api/verify/checkin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, pin }),
+        body: JSON.stringify({ code, pin, venue: currentVenue }),
       });
       const data = await res.json();
       $('pinOverlay').classList.remove('is-open');
+
       if (data.status === 'success') {
-        show('✅', data.name, 'Checked In ✓', 'valid', code, false);
+        // Update local cache so venue rows reflect the new check-in
+        if (currentVenue === 'ceremony') {
+          guestData.ceremony = { checkedIn: true, checkedInAt: data.checkedInAt };
+        } else {
+          guestData.reception = { checkedIn: true, checkedInAt: data.checkedInAt };
+        }
+        const venueName = currentVenue === 'ceremony' ? 'Ceremony' : 'Reception';
+        $('icon').textContent = '✅';
+        $('statusLabel').textContent = venueName + ' Checked In ✓';
+        $('statusLabel').className = 'status-label valid';
+        $('confirmBtn').style.display = 'none';
+        updateVenueRow('rowCeremony', 'statusCeremony', guestData.ceremony, 'ceremony');
+        updateVenueRow('rowReception', 'statusReception', guestData.reception, 'reception');
       } else if (data.status === 'wrong_pin') {
         $('pinOverlay').classList.add('is-open');
         $('pinError').textContent = 'Incorrect PIN — try again.';
       } else if (data.status === 'already_checked_in') {
-        show('⚠️', data.name, 'Already Checked In', 'warn', code, false);
+        renderGuest(guestData, code); // re-render to show warn state
       } else {
-        show('❌', '', 'Something went wrong', 'error', code, false);
+        renderGuest({ status: 'not_found' }, code);
       }
-    } catch (e) {
+    } catch (_) {
       $('pinOverlay').classList.remove('is-open');
-      show('❌', '', 'Connection Error — Try Again', 'error', code, false);
+      renderGuest({ status: 'not_found' }, code);
     } finally {
       $('pinSubmit').disabled = false;
     }

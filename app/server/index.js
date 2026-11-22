@@ -138,27 +138,49 @@ const STAFF_PIN = process.env.STAFF_PIN || '2026';
 
 app.get('/api/verify/:code', (req, res) => {
   const code = String(req.params.code || '').trim().toUpperCase();
-  const guest = db.prepare('SELECT name, attending, checked_in FROM guests WHERE invite_code = ?').get(code);
+  const guest = db.prepare(`
+    SELECT name, attending,
+           ceremony_checked_in AS ceremonyCheckedIn, ceremony_checked_in_at AS ceremonyCheckedInAt,
+           reception_checked_in AS receptionCheckedIn, reception_checked_in_at AS receptionCheckedInAt
+    FROM guests WHERE invite_code = ?
+  `).get(code);
   if (!guest) return res.json({ status: 'not_found' });
   if (guest.attending !== 'yes') return res.json({ status: 'not_attending', name: guest.name });
-  if (guest.checked_in) return res.json({ status: 'already_checked_in', name: guest.name });
-  res.json({ status: 'valid', name: guest.name });
+  res.json({
+    status: 'valid',
+    name: guest.name,
+    ceremony:  { checkedIn: !!guest.ceremonyCheckedIn,  checkedInAt: guest.ceremonyCheckedInAt  },
+    reception: { checkedIn: !!guest.receptionCheckedIn, checkedInAt: guest.receptionCheckedInAt },
+  });
 });
 
 app.post('/api/verify/checkin', (req, res) => {
-  const code = String((req.body && req.body.code) || '').trim().toUpperCase();
-  const pin  = String((req.body && req.body.pin)  || '').trim();
+  const code  = String((req.body && req.body.code)  || '').trim().toUpperCase();
+  const pin   = String((req.body && req.body.pin)   || '').trim();
+  const venue = String((req.body && req.body.venue) || '').trim();
   if (!code) return res.status(400).json({ status: 'not_found' });
   if (pin !== STAFF_PIN) return res.status(401).json({ status: 'wrong_pin' });
+  if (venue !== 'ceremony' && venue !== 'reception') return res.status(400).json({ status: 'invalid_venue' });
 
   const guest = db.prepare('SELECT * FROM guests WHERE invite_code = ?').get(code);
   if (!guest) return res.json({ status: 'not_found' });
   if (guest.attending !== 'yes') return res.json({ status: 'not_attending', name: guest.name });
-  if (guest.checked_in) return res.json({ status: 'already_checked_in', name: guest.name, checkedInAt: guest.checked_in_at });
 
-  const checkedInAt = nowIso();
-  db.prepare('UPDATE guests SET checked_in = 1, checked_in_at = ? WHERE invite_code = ?').run(checkedInAt, code);
-  res.json({ status: 'success', name: guest.name, checkedInAt });
+  if (venue === 'ceremony') {
+    if (guest.ceremony_checked_in) {
+      return res.json({ status: 'already_checked_in', name: guest.name, venue, checkedInAt: guest.ceremony_checked_in_at });
+    }
+    const checkedInAt = nowIso();
+    db.prepare('UPDATE guests SET ceremony_checked_in = 1, ceremony_checked_in_at = ? WHERE invite_code = ?').run(checkedInAt, code);
+    res.json({ status: 'success', name: guest.name, venue, checkedInAt });
+  } else {
+    if (guest.reception_checked_in) {
+      return res.json({ status: 'already_checked_in', name: guest.name, venue, checkedInAt: guest.reception_checked_in_at });
+    }
+    const checkedInAt = nowIso();
+    db.prepare('UPDATE guests SET reception_checked_in = 1, reception_checked_in_at = ? WHERE invite_code = ?').run(checkedInAt, code);
+    res.json({ status: 'success', name: guest.name, venue, checkedInAt });
+  }
 });
 
 // ── Admin auth ──────────────────────────────────────────────────────────────
@@ -187,7 +209,8 @@ app.get('/api/admin/guests', requireAdmin, (req, res) => {
   const guests = db
     .prepare(
       `SELECT name, attending, invite_code AS inviteCode, responded_at AS respondedAt,
-              checked_in AS checkedIn, checked_in_at AS checkedInAt
+              ceremony_checked_in AS ceremonyCheckedIn, ceremony_checked_in_at AS ceremonyCheckedInAt,
+              reception_checked_in AS receptionCheckedIn, reception_checked_in_at AS receptionCheckedInAt
        FROM guests ORDER BY name`
     )
     .all();
@@ -196,7 +219,8 @@ app.get('/api/admin/guests', requireAdmin, (req, res) => {
     attending: guests.filter((g) => g.attending === 'yes').length,
     declined: guests.filter((g) => g.attending === 'no').length,
     noResponse: guests.filter((g) => !g.attending).length,
-    checkedIn: guests.filter((g) => g.checkedIn).length,
+    ceremonyCheckedIn: guests.filter((g) => g.ceremonyCheckedIn).length,
+    receptionCheckedIn: guests.filter((g) => g.receptionCheckedIn).length,
   };
   res.json({ guests, counts });
 });
@@ -210,11 +234,12 @@ app.get('/api/admin/export.csv', requireAdmin, (req, res) => {
   const guests = db
     .prepare(
       `SELECT name, attending, invite_code AS inviteCode, responded_at AS respondedAt,
-              checked_in AS checkedIn, checked_in_at AS checkedInAt
+              ceremony_checked_in AS ceremonyCheckedIn, ceremony_checked_in_at AS ceremonyCheckedInAt,
+              reception_checked_in AS receptionCheckedIn, reception_checked_in_at AS receptionCheckedInAt
        FROM guests ORDER BY name`
     )
     .all();
-  const header = ['Name', 'Attending', 'Invite Code', 'Responded At', 'Checked In', 'Checked In At'];
+  const header = ['Name', 'Attending', 'Invite Code', 'Responded At', 'Ceremony Check-In', 'Ceremony Check-In At', 'Reception Check-In', 'Reception Check-In At'];
   const lines = [header.join(',')];
   for (const g of guests) {
     lines.push(
@@ -223,8 +248,10 @@ app.get('/api/admin/export.csv', requireAdmin, (req, res) => {
         csvEscape(g.attending || ''),
         csvEscape(g.inviteCode || ''),
         csvEscape(g.respondedAt || ''),
-        csvEscape(g.checkedIn ? 'yes' : 'no'),
-        csvEscape(g.checkedInAt || ''),
+        csvEscape(g.ceremonyCheckedIn ? 'yes' : 'no'),
+        csvEscape(g.ceremonyCheckedInAt || ''),
+        csvEscape(g.receptionCheckedIn ? 'yes' : 'no'),
+        csvEscape(g.receptionCheckedInAt || ''),
       ].join(',')
     );
   }
@@ -271,12 +298,18 @@ app.post('/api/checkin', requireAdmin, (req, res) => {
 });
 
 app.post('/api/admin/uncheckin', requireAdmin, (req, res) => {
-  const code = String((req.body && req.body.code) || '').trim().toUpperCase();
+  const code  = String((req.body && req.body.code)  || '').trim().toUpperCase();
+  const venue = String((req.body && req.body.venue) || '').trim();
   if (!code) return res.status(400).json({ status: 'not_found' });
+  if (venue !== 'ceremony' && venue !== 'reception') return res.status(400).json({ status: 'invalid_venue' });
   const guest = db.prepare('SELECT * FROM guests WHERE invite_code = ?').get(code);
   if (!guest) return res.json({ status: 'not_found' });
-  db.prepare('UPDATE guests SET checked_in = 0, checked_in_at = NULL WHERE invite_code = ?').run(code);
-  res.json({ status: 'success', name: guest.name });
+  if (venue === 'ceremony') {
+    db.prepare('UPDATE guests SET ceremony_checked_in = 0, ceremony_checked_in_at = NULL WHERE invite_code = ?').run(code);
+  } else {
+    db.prepare('UPDATE guests SET reception_checked_in = 0, reception_checked_in_at = NULL WHERE invite_code = ?').run(code);
+  }
+  res.json({ status: 'success', name: guest.name, venue });
 });
 
 // ── Static frontend ─────────────────────────────────────────────────────────
