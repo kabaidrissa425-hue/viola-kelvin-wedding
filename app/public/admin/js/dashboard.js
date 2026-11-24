@@ -65,7 +65,7 @@
     if (g.token) {
       btns.push(`<button class="btn-delete-guest" data-token="${escapeHtml(g.token)}">Delete</button>`);
     }
-    return btns.length ? `<td style="white-space:nowrap;vertical-align:middle">${btns.join(' ')}</td>` : '<td></td>';
+    return btns.length ? `<td style="vertical-align:middle"><div style="display:flex;flex-wrap:wrap;gap:4px">${btns.join('')}</div></td>` : '<td></td>';
   }
 
   function applyAndRender() {

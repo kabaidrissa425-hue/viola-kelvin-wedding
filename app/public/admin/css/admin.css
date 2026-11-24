@@ -180,7 +180,7 @@ table.guest-table tr:last-child td { border-bottom: none; }
   letter-spacing: .1em; text-transform: uppercase;
   color: var(--error); background: transparent;
   border: 1px solid rgba(169,84,74,.35); border-radius: 100px;
-  padding: 4px 14px; cursor: pointer; white-space: nowrap; margin-left: 4px;
+  padding: 4px 14px; cursor: pointer; white-space: nowrap;
 }
 .btn-revoke-guest:hover { background: rgba(169,84,74,.08); }
 .btn-revoke-guest:disabled { opacity: .5; cursor: default; }
@@ -189,7 +189,7 @@ table.guest-table tr:last-child td { border-bottom: none; }
   letter-spacing: .1em; text-transform: uppercase;
   color: var(--success); background: transparent;
   border: 1px solid rgba(79,122,92,.35); border-radius: 100px;
-  padding: 4px 14px; cursor: pointer; white-space: nowrap; margin-left: 4px;
+  padding: 4px 14px; cursor: pointer; white-space: nowrap;
 }
 .btn-reinstate-guest:hover { background: rgba(79,122,92,.08); }
 .btn-reinstate-guest:disabled { opacity: .5; cursor: default; }
@@ -198,7 +198,7 @@ table.guest-table tr:last-child td { border-bottom: none; }
   letter-spacing: .1em; text-transform: uppercase;
   color: var(--muted); background: transparent;
   border: 1px solid var(--border-strong); border-radius: 100px;
-  padding: 4px 14px; cursor: pointer; white-space: nowrap; margin-left: 4px;
+  padding: 4px 14px; cursor: pointer; white-space: nowrap;
 }
 .btn-delete-guest:hover { color: var(--error); border-color: rgba(169,84,74,.4); }
 .btn-delete-guest:disabled { opacity: .5; cursor: default; }
