@@ -24,7 +24,8 @@
     ticketGuestName: document.getElementById('ticketGuestName'),
     ticketCode: document.getElementById('ticketCode'),
     ticketQr: document.getElementById('ticketQr'),
-    downloadPass: document.getElementById('downloadPass'),
+    downloadImage: document.getElementById('downloadImage'),
+    downloadPdf: document.getElementById('downloadPdf'),
     editRsvpFromTicket: document.getElementById('editRsvpFromTicket'),
 
     declinedGuestName: document.getElementById('declinedGuestName'),
@@ -145,54 +146,194 @@
   els.editRsvpFromTicket.addEventListener('click', editResponse);
   els.editRsvpFromDeclined.addEventListener('click', editResponse);
 
-  // ── Download printable pass ──────────────────────────────────────────────
-  async function downloadPass() {
-    if (!window.QRious || !state.inviteCode) return;
-    try { await document.fonts.ready; } catch (e) {}
-    const W = 1080, H = 1600, cx = W / 2;
-    const c = document.createElement('canvas'); c.width = W; c.height = H;
-    const x = c.getContext('2d');
-    const rr = (X, Y, w, h, r) => {
-      x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r);
-      x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath();
-    };
-    const ctr = (t, y, font, color, ls) => {
-      x.fillStyle = color; x.font = font; x.textBaseline = 'alphabetic';
+  // ── Build ticket canvas (1080 × 1860) ────────────────────────────────────
+  async function buildTicketCanvas() {
+    try { await document.fonts.ready; } catch (_) {}
+    const W = 1080, H = 1860, cx = W / 2;
+    const c = document.createElement(‘canvas’); c.width = W; c.height = H;
+    const g = c.getContext(‘2d’);
+
+    function rr(x, y, w, h, r) {
+      g.beginPath(); g.moveTo(x + r, y);
+      g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+      g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+    }
+    function txt(str, y, font, color, ls) {
+      g.fillStyle = color; g.font = font; g.textBaseline = ‘alphabetic’;
       if (ls) {
-        x.textAlign = 'left';
-        let total = 0; for (const ch of t) total += x.measureText(ch).width + ls; total -= ls;
-        let sx = cx - total / 2;
-        for (const ch of t) { x.fillText(ch, sx, y); sx += x.measureText(ch).width + ls; }
-      } else { x.textAlign = 'center'; x.fillText(t, cx, y); }
-    };
-    x.fillStyle = '#FBF8F4'; x.fillRect(0, 0, W, H);
-    x.strokeStyle = '#C2A093'; x.lineWidth = 2; x.strokeRect(46, 46, W - 92, H - 92);
-    x.strokeStyle = 'rgba(194,160,147,.45)'; x.lineWidth = 1; x.strokeRect(60, 60, W - 120, H - 120);
-    ctr('WEDDING INVITATION', 150, '500 26px "Jost", sans-serif', '#5B6472', 8);
-    ctr('Viola & Kelvin', 268, '500 92px "Cormorant Garamond", serif', '#1B1C20');
-    ctr('Wrapped in Love', 330, 'italic 500 40px "Cormorant Garamond", serif', '#BE9483');
-    x.strokeStyle = '#C2A093'; x.lineWidth = 1; x.beginPath(); x.moveTo(cx - 110, 380); x.lineTo(cx + 110, 380); x.stroke();
-    ctr('FRIDAY · DECEMBER 18, 2026 · 5:00 PM', 442, '400 23px "Jost", sans-serif', '#1B1C20', 2);
-    ctr(`Dani’s Garden → Zaicha Lagoon D’or`, 502, `italic 500 30px "Cormorant Garamond", serif`, `#5B6472`);
-    ctr('THIS PASS ADMITS', 612, '500 22px "Jost", sans-serif', '#5B6472', 6);
-    ctr(state.name, 682, '500 56px "Cormorant Garamond", serif', '#1B1C20');
-    x.setLineDash([11, 11]); x.strokeStyle = 'rgba(27,28,32,.28)'; x.lineWidth = 2;
-    x.beginPath(); x.moveTo(78, 770); x.lineTo(W - 78, 770); x.stroke(); x.setLineDash([]);
-    x.fillStyle = '#FBF8F4'; x.beginPath(); x.arc(46, 770, 22, 0, 7); x.fill(); x.beginPath(); x.arc(W - 46, 770, 22, 0, 7); x.fill();
-    const qs = 460, qy = 856, cardW = qs + 56;
-    const qc = document.createElement('canvas');
-    new window.QRious({ element: qc, value: verifyUrl(state.inviteCode), size: qs, level: 'H', background: '#ffffff', foreground: '#17181d' });
-    x.fillStyle = '#ffffff'; x.strokeStyle = 'rgba(27,28,32,.12)'; x.lineWidth = 1;
-    rr(cx - cardW / 2, qy, cardW, cardW, 18); x.fill(); x.stroke();
-    x.drawImage(qc, cx - qs / 2, qy + 28);
-    ctr('INVITATION CODE', qy + cardW + 66, '500 22px "Jost", sans-serif', '#5B6472', 6);
-    ctr(state.inviteCode, qy + cardW + 108, '500 34px "Jost", sans-serif', '#1B1C20', 4);
-    ctr('Please present this code at the entrance', H - 96, 'italic 400 30px "Cormorant Garamond", serif', '#8A8378');
-    const a = document.createElement('a');
-    a.download = 'VK-Wedding-Pass-' + state.inviteCode + '.png';
-    a.href = c.toDataURL('image/png'); a.click();
+        g.textAlign = ‘left’;
+        const tw = [...str].reduce((s, ch) => s + g.measureText(ch).width + ls, -ls);
+        let sx = cx - tw / 2;
+        for (const ch of str) { g.fillText(ch, sx, y); sx += g.measureText(ch).width + ls; }
+      } else { g.textAlign = ‘center’; g.fillText(str, cx, y); }
+    }
+
+    // Background
+    g.fillStyle = ‘#FBF8F4’; g.fillRect(0, 0, W, H);
+
+    // Warm stub zone
+    g.fillStyle = ‘#F0E8DF’; g.fillRect(0, 756, W, H - 756);
+
+    // Borders
+    g.strokeStyle = ‘#B89A87’; g.lineWidth = 2.5; g.strokeRect(32, 32, W - 64, H - 64);
+    g.strokeStyle = ‘rgba(184,154,135,.35)’; g.lineWidth = 1; g.strokeRect(48, 48, W - 96, H - 96);
+
+    // Top triple lines with dot
+    [[98, .65], [106, .38], [114, .2]].forEach(([y, o]) => {
+      g.strokeStyle = `rgba(184,154,135,${o})`; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(80, y); g.lineTo(W - 80, y); g.stroke();
+    });
+    g.fillStyle = ‘#B89A87’; g.beginPath(); g.arc(cx, 106, 5, 0, Math.PI * 2); g.fill();
+
+    // Corner accent dots
+    [[66, 66], [W - 66, 66], [66, H - 66], [W - 66, H - 66]].forEach(([x, y]) => {
+      g.fillStyle = ‘rgba(184,154,135,.45)’; g.beginPath(); g.arc(x, y, 3, 0, Math.PI * 2); g.fill();
+    });
+
+    // Eyebrow
+    txt(‘WEDDING INVITATION’, 184, ‘500 25px "Jost", sans-serif’, ‘#B89A87’, 8);
+
+    // Couple names
+    txt(‘Viola & Kelvin’, 305, ‘500 102px "Cormorant Garamond", serif’, ‘#1B1C20’);
+
+    // Tagline
+    txt(‘Wrapped in Love’, 368, ‘italic 500 44px "Cormorant Garamond", serif’, ‘#B89A87’);
+
+    // Ornamental divider
+    g.strokeStyle = ‘#B89A87’; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(cx - 150, 424); g.lineTo(cx - 24, 424); g.stroke();
+    g.beginPath(); g.moveTo(cx + 24, 424); g.lineTo(cx + 150, 424); g.stroke();
+    [cx, cx - 15, cx + 15].forEach((x, i) => {
+      g.fillStyle = ‘#B89A87’; g.beginPath(); g.arc(x, 424, i === 0 ? 5 : 2.5, 0, Math.PI * 2); g.fill();
+    });
+
+    // Date & time
+    txt(‘FRIDAY · DECEMBER 18, 2026’, 506, ‘400 25px "Jost", sans-serif’, ‘#1B1C20’, 2);
+    txt(‘5:00 PM’, 556, ‘300 24px "Jost", sans-serif’, ‘#5B6472’, 2);
+
+    // Venue
+    txt("Dani’s Garden  →  Zaicha Lagoon D’or", 622, ‘italic 500 34px "Cormorant Garamond", serif’, ‘#5B6472’);
+    txt(‘ELWA, Liberia  ·  Paynesville, Liberia’, 672, ‘400 21px "Jost", sans-serif’, ‘#8A8378’, 1);
+
+    // Perforation
+    g.setLineDash([14, 12]); g.strokeStyle = ‘rgba(27,28,32,.18)’; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(70, 756); g.lineTo(W - 70, 756); g.stroke(); g.setLineDash([]);
+    [32, W - 32].forEach(x => {
+      g.fillStyle = ‘rgba(27,28,32,.1)’; g.beginPath(); g.arc(x, 756, 22, 0, Math.PI * 2); g.fill();
+    });
+
+    // This pass admits
+    txt(‘THIS PASS ADMITS’, 840, ‘500 22px "Jost", sans-serif’, ‘#8A8378’, 7);
+
+    // Guest name
+    txt(state.name, 924, ‘500 72px "Cormorant Garamond", serif’, ‘#1B1C20’);
+    g.font = ‘500 72px "Cormorant Garamond", serif’;
+    const nw = Math.min(g.measureText(state.name).width, 680);
+    g.strokeStyle = ‘rgba(184,154,135,.4)’; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(cx - nw / 2, 944); g.lineTo(cx + nw / 2, 944); g.stroke();
+
+    // QR card
+    const qs = 440, qPad = 32, cardW = qs + qPad * 2, cardH = qs + qPad * 2;
+    const cardX = cx - cardW / 2, cardY = 1004;
+    g.shadowColor = ‘rgba(27,28,32,.12)’; g.shadowBlur = 24; g.shadowOffsetY = 8;
+    g.fillStyle = ‘#ffffff’; rr(cardX, cardY, cardW, cardH, 22); g.fill();
+    g.shadowBlur = 0; g.shadowOffsetY = 0;
+    g.strokeStyle = ‘rgba(184,154,135,.3)’; g.lineWidth = 1; rr(cardX, cardY, cardW, cardH, 22); g.stroke();
+
+    const qc = document.createElement(‘canvas’);
+    new window.QRious({ element: qc, value: verifyUrl(state.inviteCode), size: qs, level: ‘H’, background: ‘#ffffff’, foreground: ‘#17181d’ });
+    g.drawImage(qc, cx - qs / 2, cardY + qPad);
+
+    // Invitation code
+    const afterCard = cardY + cardH;
+    txt(‘INVITATION CODE’, afterCard + 64, ‘500 22px "Jost", sans-serif’, ‘#8A8378’, 6);
+    txt(state.inviteCode, afterCard + 112, ‘500 40px "Jost", sans-serif’, ‘#1B1C20’, 4);
+
+    // Bottom decoration
+    g.strokeStyle = ‘rgba(184,154,135,.4)’; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(80, H - 132); g.lineTo(W - 80, H - 132); g.stroke();
+    g.beginPath(); g.moveTo(80, H - 124); g.lineTo(W - 80, H - 124); g.stroke();
+    g.fillStyle = ‘#B89A87’; g.beginPath(); g.arc(cx, H - 128, 4, 0, Math.PI * 2); g.fill();
+
+    txt(‘Please present this code at the entrance’, H - 78, ‘italic 400 28px "Cormorant Garamond", serif’, ‘#8A8378’);
+
+    return c;
   }
-  els.downloadPass.addEventListener('click', downloadPass);
+
+  // ── iOS detection ─────────────────────────────────────────────────────────
+  function isIOS() {
+    return /iP(ad|hone|od)/i.test(navigator.userAgent) ||
+      (navigator.platform === ‘MacIntel’ && navigator.maxTouchPoints > 1);
+  }
+
+  // ── Save as Image ─────────────────────────────────────────────────────────
+  async function downloadAsImage() {
+    if (!window.QRious || !state.inviteCode) return;
+    const btn = els.downloadImage;
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = ‘Preparing…’;
+    try {
+      const canvas = await buildTicketCanvas();
+      const filename = `VK-Wedding-Pass-${state.inviteCode}.png`;
+
+      // Web Share API — native Save to Photos on iOS 15+ / Android
+      if (navigator.canShare) {
+        try {
+          const shareBlob = await new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(), ‘image/png’));
+          const file = new File([shareBlob], filename, { type: ‘image/png’ });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: ‘My Wedding Pass’ });
+            return;
+          }
+        } catch (e) { if (e.name === ‘AbortError’) return; }
+      }
+
+      // Blob URL download (reliable across desktop browsers)
+      const blob = await new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(), ‘image/png’));
+      const url = URL.createObjectURL(blob);
+      if (isIOS()) {
+        // iOS Safari: open image in new tab → long-press to Save to Photos
+        window.open(url, ‘_blank’);
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+      } else {
+        const a = document.createElement(‘a’);
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
+  }
+
+  // ── Save as PDF ───────────────────────────────────────────────────────────
+  async function downloadAsPDF() {
+    if (!window.QRious || !state.inviteCode) return;
+    const btn = els.downloadPdf;
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = ‘Preparing…’;
+    try {
+      if (!window.jspdf) { downloadAsImage(); return; }
+      const canvas = await buildTicketCanvas();
+      const imgData = canvas.toDataURL(‘image/jpeg’, 0.92);
+      const { jsPDF } = window.jspdf;
+      // 108 × 186mm preserves the canvas aspect ratio (1080:1860)
+      const pdf = new jsPDF({ orientation: ‘portrait’, unit: ‘mm’, format: [108, 186] });
+      pdf.addImage(imgData, ‘JPEG’, 0, 0, 108, 186);
+      if (isIOS()) {
+        const pdfUrl = URL.createObjectURL(pdf.output(‘blob’));
+        window.open(pdfUrl, ‘_blank’);
+        setTimeout(() => URL.revokeObjectURL(pdfUrl), 30000);
+      } else {
+        pdf.save(`VK-Wedding-Pass-${state.inviteCode}.pdf`);
+      }
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
+  }
+
+  els.downloadImage.addEventListener(‘click’, downloadAsImage);
+  els.downloadPdf.addEventListener(‘click’, downloadAsPDF);
 
   // ── Restore session ───────────────────────────────────────────────────────
   (async function restore() {
