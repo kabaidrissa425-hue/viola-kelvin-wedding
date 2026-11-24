@@ -306,6 +306,18 @@
     }
   }
 
+  // ── Load jsPDF on demand (keeps it off the critical page-load path) ────────
+  function loadJsPDF() {
+    if (window.jspdf) return Promise.resolve(window.jspdf);
+    return new Promise((resolve, reject) => {
+      const s = document.createElement(‘script’);
+      s.src = ‘https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js’;
+      s.onload = () => resolve(window.jspdf);
+      s.onerror = () => reject(new Error(‘jsPDF load failed’));
+      document.head.appendChild(s);
+    });
+  }
+
   // ── Save as PDF ───────────────────────────────────────────────────────────
   async function downloadAsPDF() {
     if (!window.QRious || !state.inviteCode) return;
@@ -313,10 +325,11 @@
     const orig = btn.textContent;
     btn.disabled = true; btn.textContent = ‘Preparing…’;
     try {
-      if (!window.jspdf) { downloadAsImage(); return; }
+      const jspdfModule = await loadJsPDF().catch(() => null);
+      if (!jspdfModule) { await downloadAsImage(); return; }
       const canvas = await buildTicketCanvas();
       const imgData = canvas.toDataURL(‘image/jpeg’, 0.92);
-      const { jsPDF } = window.jspdf;
+      const { jsPDF } = jspdfModule;
       // 108 × 186mm preserves the canvas aspect ratio (1080:1860)
       const pdf = new jsPDF({ orientation: ‘portrait’, unit: ‘mm’, format: [108, 186] });
       pdf.addImage(imgData, ‘JPEG’, 0, 0, 108, 186);
