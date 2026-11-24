@@ -139,7 +139,7 @@ const STAFF_PIN = process.env.STAFF_PIN || '2026';
 app.get('/api/verify/:code', (req, res) => {
   const code = String(req.params.code || '').trim().toUpperCase();
   const guest = db.prepare(`
-    SELECT name, attending,
+    SELECT name, attending, status,
            ceremony_checked_in AS ceremonyCheckedIn, ceremony_checked_in_at AS ceremonyCheckedInAt,
            reception_checked_in AS receptionCheckedIn, reception_checked_in_at AS receptionCheckedInAt
     FROM guests WHERE invite_code = ?
@@ -148,6 +148,7 @@ app.get('/api/verify/:code', (req, res) => {
   if (guest.attending !== 'yes') return res.json({ status: 'not_attending', name: guest.name });
   res.json({
     status: 'valid',
+    guestStatus: guest.status,
     name: guest.name,
     ceremony:  { checkedIn: !!guest.ceremonyCheckedIn,  checkedInAt: guest.ceremonyCheckedInAt  },
     reception: { checkedIn: !!guest.receptionCheckedIn, checkedInAt: guest.receptionCheckedInAt },
@@ -165,6 +166,7 @@ app.post('/api/verify/checkin', (req, res) => {
   const guest = db.prepare('SELECT * FROM guests WHERE invite_code = ?').get(code);
   if (!guest) return res.json({ status: 'not_found' });
   if (guest.attending !== 'yes') return res.json({ status: 'not_attending', name: guest.name });
+  if (guest.status === 'revoked') return res.json({ status: 'revoked', name: guest.name });
 
   if (venue === 'ceremony') {
     if (guest.ceremony_checked_in) {
@@ -208,7 +210,7 @@ app.get('/api/admin/session', (req, res) => {
 app.get('/api/admin/guests', requireAdmin, (req, res) => {
   const guests = db
     .prepare(
-      `SELECT public_token AS token, name, attending, invite_code AS inviteCode, responded_at AS respondedAt,
+      `SELECT public_token AS token, name, attending, status, invite_code AS inviteCode, responded_at AS respondedAt,
               ceremony_checked_in AS ceremonyCheckedIn, ceremony_checked_in_at AS ceremonyCheckedInAt,
               reception_checked_in AS receptionCheckedIn, reception_checked_in_at AS receptionCheckedInAt
        FROM guests ORDER BY name`
@@ -295,6 +297,24 @@ app.post('/api/checkin', requireAdmin, (req, res) => {
     code
   );
   res.json({ status: 'success', name: guest.name, checkedInAt });
+});
+
+app.post('/api/admin/guests/:token/revoke', requireAdmin, (req, res) => {
+  const token = String(req.params.token || '').trim();
+  if (!token) return res.status(400).json({ status: 'missing_token' });
+  const guest = db.prepare('SELECT name FROM guests WHERE public_token = ?').get(token);
+  if (!guest) return res.json({ status: 'not_found' });
+  db.prepare("UPDATE guests SET status = 'revoked' WHERE public_token = ?").run(token);
+  res.json({ status: 'success', name: guest.name });
+});
+
+app.post('/api/admin/guests/:token/reinstate', requireAdmin, (req, res) => {
+  const token = String(req.params.token || '').trim();
+  if (!token) return res.status(400).json({ status: 'missing_token' });
+  const guest = db.prepare('SELECT name FROM guests WHERE public_token = ?').get(token);
+  if (!guest) return res.json({ status: 'not_found' });
+  db.prepare("UPDATE guests SET status = 'approved' WHERE public_token = ?").run(token);
+  res.json({ status: 'success', name: guest.name });
 });
 
 app.delete('/api/admin/guests/:token', requireAdmin, (req, res) => {

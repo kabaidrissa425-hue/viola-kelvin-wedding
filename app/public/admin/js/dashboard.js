@@ -56,6 +56,12 @@
     if (g.inviteCode && g.receptionCheckedIn) {
       btns.push(`<button class="btn-undo-checkin" data-code="${escapeHtml(g.inviteCode)}" data-venue="reception">Undo Reception</button>`);
     }
+    if (g.token && g.status !== 'revoked') {
+      btns.push(`<button class="btn-revoke-guest" data-token="${escapeHtml(g.token)}">Revoke</button>`);
+    }
+    if (g.token && g.status === 'revoked') {
+      btns.push(`<button class="btn-reinstate-guest" data-token="${escapeHtml(g.token)}">Reinstate</button>`);
+    }
     if (g.token) {
       btns.push(`<button class="btn-delete-guest" data-token="${escapeHtml(g.token)}">Delete</button>`);
     }
@@ -81,7 +87,7 @@
     els.tableBody.innerHTML = rows
       .map(
         (g) => `<tr>
-          <td>${escapeHtml(g.name)}</td>
+          <td>${escapeHtml(g.name)}${g.status === 'revoked' ? ' <span class="badge badge-revoked">Revoked</span>' : ''}</td>
           <td>${rsvpBadge(g.attending)}</td>
           <td>${g.inviteCode ? escapeHtml(g.inviteCode) : '—'}</td>
           <td>${fmtDate(g.respondedAt)}</td>
@@ -103,6 +109,28 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code: btn.dataset.code, venue }),
         });
+        if (res.status === 401) { location.href = './login.html?next=./dashboard.html'; return; }
+        await load();
+      });
+    });
+
+    els.tableBody.querySelectorAll('.btn-revoke-guest').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const name = btn.closest('tr').querySelector('td').textContent.replace('Revoked', '').trim();
+        if (!confirm(`Revoke pass for "${name}"? They will be blocked at check-in.`)) return;
+        btn.disabled = true;
+        const res = await fetch('/api/admin/guests/' + encodeURIComponent(btn.dataset.token) + '/revoke', { method: 'POST' });
+        if (res.status === 401) { location.href = './login.html?next=./dashboard.html'; return; }
+        await load();
+      });
+    });
+
+    els.tableBody.querySelectorAll('.btn-reinstate-guest').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const name = btn.closest('tr').querySelector('td').textContent.replace('Revoked', '').trim();
+        if (!confirm(`Reinstate pass for "${name}"?`)) return;
+        btn.disabled = true;
+        const res = await fetch('/api/admin/guests/' + encodeURIComponent(btn.dataset.token) + '/reinstate', { method: 'POST' });
         if (res.status === 401) { location.href = './login.html?next=./dashboard.html'; return; }
         await load();
       });

@@ -389,6 +389,16 @@
       return;
     }
 
+    // Valid guest — check if pass has been revoked
+    if (data.guestStatus === 'revoked') {
+      $('icon').textContent = '🚫';
+      $('guestName').textContent = data.name || '';
+      $('statusLabel').textContent = 'Pass Revoked';
+      $('statusLabel').className = 'status-label error';
+      $('venueRows').style.display = 'none';
+      return;
+    }
+
     // Valid guest — show per-venue status
     $('guestName').textContent = data.name || '';
     $('venueRows').style.display = 'flex';
@@ -466,6 +476,8 @@
       } else if (data.status === 'wrong_pin') {
         $('pinOverlay').classList.add('is-open');
         $('pinError').textContent = 'Incorrect PIN — try again.';
+      } else if (data.status === 'revoked') {
+        renderGuest({ status: 'valid', guestStatus: 'revoked', name: data.name, ceremony: guestData.ceremony, reception: guestData.reception }, code);
       } else if (data.status === 'already_checked_in') {
         renderGuest(guestData, code); // re-render to show warn state
       } else {

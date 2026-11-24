@@ -32,5 +32,7 @@ addCol('ALTER TABLE guests ADD COLUMN reception_checked_in INTEGER NOT NULL DEFA
 addCol('ALTER TABLE guests ADD COLUMN reception_checked_in_at TEXT');
 // Carry any legacy single check-in into the ceremony slot
 db.exec('UPDATE guests SET ceremony_checked_in = 1, ceremony_checked_in_at = checked_in_at WHERE checked_in = 1 AND ceremony_checked_in = 0');
+// Pass status: 'approved' (active) | 'revoked' (blocked). Default approved for all existing records.
+addCol("ALTER TABLE guests ADD COLUMN status TEXT NOT NULL DEFAULT 'approved'");
 
 module.exports = db;
